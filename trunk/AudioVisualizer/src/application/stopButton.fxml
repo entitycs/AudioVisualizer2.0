@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="47.0" prefWidth="32.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <children>
+        <Rectangle id="pauseButton" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="47.0" layoutX="3.0"
+                   layoutY="0.0" smooth="false" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0"
+                   width="25.67498779296875"/>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="205.0" layoutX="-87.0" layoutY="-79.0"
+                   mouseTransparent="false" scaleX="0.07" scaleY="0.07" stroke="BLACK" strokeType="INSIDE"
+                   width="205.0"/>
+    </children>
+</AnchorPane>

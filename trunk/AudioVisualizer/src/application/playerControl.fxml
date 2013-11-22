@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            pickOnBounds="true" prefHeight="54.0" prefWidth="164.0" xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/2.2">
+    <children>
+        <fx:include id="prevButton" source="prevButton.fxml" layoutX="2.0" layoutY="4.0"/>
+        <fx:include id="" source="playButton.fxml" layoutX="35.0" layoutY="4.0" mouseTransparent="false"/>
+        <fx:include source="nextButton.fxml" layoutX="67.0" layoutY="4.0"/>
+        <fx:include source="pauseButton.fxml" layoutX="100.0" layoutY="5.0"/>
+        <fx:include source="stopButton.fxml" layoutX="132.0" layoutY="4.0"/>
+    </children>
+</AnchorPane>

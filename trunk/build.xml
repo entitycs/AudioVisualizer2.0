@@ -1,0 +1,79 @@
+<project name="AudioVisualizer" default="build" xmlns:fx="javafx:com.sun.javafx.tools.ant">
+
+    <property name="project.dir"         value="AudioVisualizer"/>
+    <property name="src.dir"             value="${project.dir}/src"/>
+    <property name="libs.dir"            value="${project.dir}/libs"/>
+    <property name="p-res.dir"           value="${project.dir}/res"/>
+
+    <property name="build.dir"           value="build"/>
+    <property name="classes.dir"         value="${build.dir}/classes"/>
+    <property name="b-res.dir"           value="${build.dir}/res"/>
+
+    <property name="main-class"          value="application.Main"/>
+
+
+    <path id="classpath">
+        <fileset dir="." includes="${libs.dir}/*"/>
+    </path>
+
+
+    <target name="init-fx-tasks">
+        <path id="fxant">
+            <filelist>
+                <file name="${java.home}\..\lib\ant-javafx.jar"/>
+                <file name="${java.home}\lib\jfxrt.jar"/>
+            </filelist>
+        </path>
+
+        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpathref="fxant"/>
+    </target>
+
+
+    <target name='compile'>
+        <mkdir dir="${classes.dir}" />
+
+        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+
+        <!-- Copy over non-Java Files  -->
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}">
+                <include name="**/*.class"/>
+                <include name="**/*.css"/>
+                <include name="**/*.fxml"/>
+           </fileset>
+        </copy>
+
+        <copy todir="${classes.dir}/res">
+            <fileset dir="${p-res.dir}"/>
+        </copy>
+    </target>
+        
+
+    <target name="build" depends="compile, init-fx-tasks">
+        <fx:jar destfile="${build.dir}/${ant.project.name}.jar">
+            <fx:application name="${ant.project.name}" mainClass="${main-class}"/>
+
+            <fx:resources>
+                <fx:fileset dir="." includes="${libs.dir}/*"/>
+            </fx:resources>
+
+            <fileset dir="${classes.dir}"/>
+        </fx:jar>
+    </target>
+
+
+    <target name="run" depends="build">
+        <java fork="true" classname="${main-class}">
+            <classpath>
+                <path refid="classpath"/>
+                <path location="${build.dir}/${ant.project.name}.jar"/>
+            </classpath>
+        </java>
+    </target>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+</project>
