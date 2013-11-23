@@ -1,48 +1,43 @@
 package application.mediaPlayer.interfacing;
 
+import application.event.TavEndOfMediaEventHandler;
+import application.listener.TavAudioSpectrumListener;
+
 public interface TavMediaPlayer
 {
 
-	public abstract Object getAudioEqualizer();
+	public  Object getAudioEqualizer();
 
-	public abstract double getAudioSpectrumInterval();
+	public  double getAudioSpectrumInterval();
 
-	public abstract int getAudioSpectrumNumBands();
+	public  int getAudioSpectrumNumBands();
 
-	public abstract int getAudioSpectrumThreshold();
+	public  int getAudioSpectrumThreshold();
 
-	public abstract double getCurrentTime();
+	public  Double getCurrentTime();
 
-	public abstract String getMediaLocation();
+	public  String getMediaLocation();
 
-	public abstract Object getPlayer();
+	public  Object getPlayer();
 
-	public abstract void pauseTrack();
+	public  void pauseTrack();
 
-	public abstract void playlistReady();
+	public  void playlistReady();
 
-	public abstract void playTrack();
+	public  void playTrack();
 
-	public abstract void setAudioSpectrumInterval(double interval);
-
-	public abstract void setAudioSpectrumNumBands(int numBands);
-
-	public abstract void setAudioSpectrumThreshold(int threshold);
-
-	public abstract void setMediaLocation(String MediaLocation);
-//
-//	public abstract void setAudioSpectrumLlistener(
-//			TavAudioSpectrumListener spectrumListener);
-
-	public abstract void stopTrack();
-
-	public abstract void setOnEndOfMedia(
-			TavEndOfMediaEventHandler tavEndOfMediaEventHandler);
-
-	public abstract void prevTrack();
+	public  void stopTrack();
 	
-	public abstract void nextTrack();
+	public  boolean setAudioSpectrumInterval(double interval);
 
-	public abstract void setAudioSpectrumListener(TavAudioSpectrumListener audioSpectrumListener);
+	public  void setAudioSpectrumListener(TavAudioSpectrumListener audioSpectrumListener);
+	
+	public  boolean setAudioSpectrumNumBands(int numBands);
 
+	public  boolean setAudioSpectrumThreshold(int threshold);
+
+	public  void setMediaLocation(String MediaLocation);
+	
+	public  void setOnEndOfMedia(
+			TavEndOfMediaEventHandler tavEndOfMediaEventHandler);
 }

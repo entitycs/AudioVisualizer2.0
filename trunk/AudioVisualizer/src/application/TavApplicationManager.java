@@ -2,36 +2,38 @@ package application;
 
 import java.io.IOException;
 
-import application.mediaPlayer.interfacing.TavAudioSpectrumListener;
+import exception.TavUnimplementedFunctionalityException;
+import application.listener.PlayerControlsEventListener;
+import application.listener.PlaylistReadyListener;
+import application.listener.TavAudioSpectrumListener;
 import application.visualizer.interfacing.VisualizerControlsEventListener;
 import javafx.application.Platform;
-import javafx.scene.control.ListView;
 import javafx.stage.Stage;
-import listeners.PlayerControlsEventListener;
-import listeners.PlaylistReadyListener;
 
 /**
  * The TavApplicationManager communicates with the media player and visualizer
  * managers as well as with the application stage (GUI w/o visualization window)
  */
-public class TavApplicationManager implements TavAudioSpectrumListener, PlaylistReadyListener
+public class TavApplicationManager implements TavAudioSpectrumListener,
+		PlaylistReadyListener
 {
 	private final TavMediaPlayerManager mediaPlayerManager;
 	private final TavVisualizerManager visualizerManager;
+	private final TavSettingManager settingManager;
 
-	// not being used functionaly.  Will remove soon
+	// not being used functionaly. Will remove soon
 	public enum Status
 	{
 		STOPPED, PLAYING, PAUSED
 	};
 
 	private Status currentStatus = Status.STOPPED;
-	private String usePlayerSetting = "Default";
 
 	private TavApplicationManager()
 	{
-		this.mediaPlayerManager = new TavMediaPlayerManager();	
+		this.mediaPlayerManager = new TavMediaPlayerManager();
 		this.visualizerManager = new TavVisualizerManager();
+		this.settingManager = new TavSettingManager();
 	}
 
 	/**
@@ -60,9 +62,9 @@ public class TavApplicationManager implements TavAudioSpectrumListener, Playlist
 		PlaylistReadyListener t = this;
 		PlayerControlsEventListener a = mediaPlayerManager;
 		VisualizerControlsEventListener v = visualizerManager;
-		
+
 		// instantiate the application stage and initialize its event handlers
-		TavApplicationStage.getInstance().initHandlers( t, a, v );
+		TavApplicationStage.getInstance().initHandlers(t, a, v);
 
 		// pass the application scene to the primary stage
 		primaryStage.setScene(TavApplicationStage.getAppScene());
@@ -75,25 +77,25 @@ public class TavApplicationManager implements TavAudioSpectrumListener, Playlist
 	 * Playlist Ready
 	 * 
 	 * This method is called once the user has pressed play after building a
-	 * playlist with one or more songs.  
+	 * playlist with one or more songs.
 	 * 
 	 * @param playlist
 	 */
 	public void playlistReady()
 	{
 		// or, if the user has no songs in the playlist
-		if (TavApplicationStage.getInstance().getPlaylist().getItems().size() == 0)
+		if (TavApplicationStage.getInstance().getPlaylist().size() == 0)
 		{
 			// do nothing (return)
 			return;
 		}
 		System.out.println("PlaylistReady (app manager)");
 		// inform the sub management layer that the playlist is ready
-		
+
 		updateComponents();
 
 		this.visualizerManager.playlistReady();
-		
+
 		this.mediaPlayerManager.playlistReady();
 	}
 
@@ -107,11 +109,11 @@ public class TavApplicationManager implements TavAudioSpectrumListener, Playlist
 
 		// let the mediaPlayerManager decide on whether or not to update
 		// the visualizer for now
-		
+
 		// updatePlayer
 		this.mediaPlayerManager.updatePlayer();
 	}
-	
+
 	/**
 	 * Set Status
 	 * 
@@ -136,18 +138,47 @@ public class TavApplicationManager implements TavAudioSpectrumListener, Playlist
 		return this.currentStatus;
 	}
 
+	/**
+	 * Get Media Player Manager
+	 * 
+	 * The application manager should be aware of any time the media player
+	 * manager needs the visualizer manager and vice versa.
+	 * 
+	 * @return the system media player manager
+	 */
 	public TavMediaPlayerManager getMediaPlayerManager()
 	{
 		return this.mediaPlayerManager;
 	}
-
+	
+	/**
+	 * Get Visualizer Manager
+	 * 
+	 * The application manager should be aware of any time the visualizer
+	 * manager needs the media player manager and vice versa.
+	 * 
+	 * @return the system visualizer manager
+	 */
 	public TavVisualizerManager getVisualizerManager()
 	{
 		return this.visualizerManager;
 	}
 
 	/**
-	 * Spectrum data update given short[] magnitudes 
+	 * Get Setting Manager
+	 * 
+	 * The application manager should be aware of any time the visualizer
+	 * manager needs the media player manager and vice versa.
+	 * 
+	 * @return the system setting manager
+	 */
+	public TavSettingManager getSettingManager()
+	{
+		return this.settingManager;
+	}
+	
+	/**
+	 * Spectrum data update given short[] magnitudes
 	 * 
 	 * (CAN BE USED TO ALTER LIBGDX SPECTRUM VALUES)
 	 * 
@@ -161,9 +192,12 @@ public class TavApplicationManager implements TavAudioSpectrumListener, Playlist
 	public void spectrumDataUpdate(double timestamp, double duration,
 			float[] magnitudes, short[] phases)
 	{
-		//Platform.runLater( new TavSpectrumDataUpdater(timestamp,duration,magnitudes,phases, timestamp - this.mediaPlayerManager.getCurrentTime()));
-		for(double i = 0; i < 50; i++)
-			magnitudes[(int)i] /= 10.0;
+		// Platform.runLater( new
+		// TavSpectrumDataUpdater(timestamp,duration,magnitudes,phases,
+		// timestamp - this.mediaPlayerManager.getCurrentTime()));
+		for (double i = 0; i < 50; i++)
+			magnitudes[(int) i] /= 10.0;
+		TavApplicationStage.getInstance().consoleFloatArray(magnitudes);
 	}
 
 	/**
@@ -178,44 +212,19 @@ public class TavApplicationManager implements TavAudioSpectrumListener, Playlist
 	public void spectrumDataUpdate(double timestamp, double duration,
 			float[] magnitudes, float[] phases)
 	{
-		Platform.runLater( new TavSpectrumDataUpdater(timestamp,duration,magnitudes,phases, timestamp - this.mediaPlayerManager.getCurrentTime()));
-	}
-	
-	public ListView<String> getPlaylist(){
-		return TavApplicationStage.getInstance()
-				.getPlaylist();
-	}
+		try
+		{
+			Platform.runLater(new TavSpectrumDataUpdater(timestamp, duration,
+					magnitudes, phases, timestamp
+							- this.mediaPlayerManager.getCurrentTime()));
+			
+		} catch (TavUnimplementedFunctionalityException e)
+		{
+			System.err
+					.println("Error: The visualization listener will now be detached from the media player.");
 
-	public void widthSetting(double width)
-	{
-		this.visualizerManager.setWidth(width);
-	}
-	
-	public void heightSetting(double height)
-	{
-		this.visualizerManager.setHeight(height);
-	}
-
-	public void playerSetting(String text)
-	{
-		// if there is a media player in action, stop it.
-		if (this.mediaPlayerManager.getMediaPlayer() != null)
-			this.mediaPlayerManager.stop();
-		
-		if (text.equals("Default")){
-			this.usePlayerSetting = text;
+			e.printStackTrace();
+			mediaPlayerManager.getMediaPlayer().setAudioSpectrumListener(null);
 		}
-		else if (text.equals("Alternate")){
-			this.usePlayerSetting = text;
-		}
-		// else if the text does not match, leave the current userPlayerSetting be
-		
-		this.mediaPlayerManager.updatePlayer();
-	}
-
-	public String getPlayerSetting()
-	{
-		// TODO Auto-generated method stub
-		return usePlayerSetting;
 	}
 }

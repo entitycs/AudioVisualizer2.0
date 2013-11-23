@@ -8,15 +8,18 @@ import javafx.stage.Stage;
 public class Main extends Application
 {
 
-	// JavaFX application starts here (see overridden method in JavaDoc)
 	@Override
 	public void start(Stage primaryStage)
 	{
 		try
 		{
+			// Build the application manager
+			// and show the primary stage
 			buildApp(primaryStage);
-		} catch (IOException e)
+		} 
+		catch (IOException e)
 		{
+			System.err.println("Unknown error building application stage.");
 			e.printStackTrace();
 		}
 	}
@@ -24,23 +27,23 @@ public class Main extends Application
 	/**
 	 * Main
 	 * 
-	 * Per JavaFX convention, main calls launch The overridden method 'start' is
-	 * called behind the scenes and the primary stage is given as the parameter
+	 * Per JavaFX convention, main calls launch.
 	 * 
-	 * @param args
+	 * The overridden method 'start' provides the JavaFX primary stage
+	 * 
+	 * @param args are not used in this version
 	 */
 	public static void main(String[] args)
-	{
-		
-		launch(args);
+	{	
+		launch();
 	}
 
 	/**
 	 * Build App
 	 * 
-	 * Before a visualization begins, the remaining visual objects are
-	 * displayed. Included is a playlist, play controls (play, pause, etc.), a
-	 * console and a visualization list.
+	 * Create the application manager and set the primary stage
+	 * 
+	 * The primary stage comes from the JavaFX application.
 	 * 
 	 * @param primaryStage
 	 *            is the application stage minus t

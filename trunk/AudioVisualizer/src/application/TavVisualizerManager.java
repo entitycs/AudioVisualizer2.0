@@ -6,8 +6,8 @@ import visualizer.visualizerFX.visualizations.TestVis;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import listeners.PlaylistReadyListener;
-import application.mediaPlayer.interfacing.TavAudioSpectrumListener;
+import application.listener.PlaylistReadyListener;
+import application.listener.TavAudioSpectrumListener;
 import application.visualizer.interfacing.*;
 
 public class TavVisualizerManager implements PlaylistReadyListener,
@@ -92,7 +92,7 @@ public class TavVisualizerManager implements PlaylistReadyListener,
 	/**
 	 *  Spectrum data given float[] magnitudes
 	 *  
-	 *  When using JavaFX, this 
+	 *  
 	 */
 	public void spectrumDataUpdate(double timestamp, double duration,
 			float[] magnitudes, float[] phases, double offset)

@@ -1,8 +1,8 @@
 package visualizer.visualizerGDX;
 
 import javafx.application.Platform;
-import application.mediaPlayer.interfacing.TavAudioSpectrumListener;
-import application.mediaPlayer.interfacing.TavEndOfMediaEventHandler;
+import application.event.TavEndOfMediaEventHandler;
+import application.listener.TavAudioSpectrumListener;
 import application.mediaPlayer.interfacing.TavMediaPlayer;
 
 import com.badlogic.gdx.Gdx;
@@ -35,6 +35,7 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	private LwjglApplicationConfiguration cfg;
 	private TavEndOfMediaEventHandler endOfMediaHandler;
 	private TavAudioSpectrumListener audioSpectrumListener;
+	private TavEndOfMediaEventHandler endOfMediaEventHandler;
 
 	public AudioVisualizerPlayer() {
 
@@ -46,7 +47,7 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 		wrapperRunning = false;
 		if (AV != null){
 			AV.stop();
-			AV.dispose();
+			//AV.dispose();
 		}
 		if (visApp != null)
 		visApp.exit();
@@ -79,8 +80,8 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	}
 
 	@Override
-	public double getCurrentTime() {
-		return 0; // To change body of implemented methods use File | Settings |
+	public Double getCurrentTime() {
+		return null; // To change body of implemented methods use File | Settings |
 					// File Templates.
 	}
 
@@ -94,13 +95,6 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	public Object getPlayer() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void nextTrack()
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
@@ -141,17 +135,16 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					System.out.println(AV);
-					System.out.println(visApp);
+
 					AV = new AudioVisualizer(mediaLocation);
 
 					// do not close the application stage on exit
 					visApp = new LwjglApplication(AV, cfg);
+					AV.setApp(visApp);
 					AV.setAudioSpectrumListener(audioSpectrumListener);
 					System.out.println("visapp");
 					visApp.addLifecycleListener(AVP);
-					//AVP = null;
-					// calling as usual
+					AV.setonEndOfMedia(endOfMediaEventHandler);
 
 				}
 			});
@@ -160,6 +153,12 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 			wrapperRunning = true;
 		} else {
 			stopTrack();
+			AV.setApp(visApp);
+			AV.setAudioSpectrumListener(audioSpectrumListener);
+			System.out.println("visapp");
+			visApp.addLifecycleListener(AVP);
+			AV.setonEndOfMedia(endOfMediaEventHandler);
+
 			// Thread.sleep(400); // how to keep libGDX player from misreading
 			// header?
 			AV.newTrack(this.mediaLocation);
@@ -169,13 +168,6 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	@Override
 	public void playTrack() {
 		AV.resume1();
-	}
-
-	@Override
-	public void prevTrack()
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
@@ -192,7 +184,8 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	}
 
 	@Override
-	public void setAudioSpectrumInterval(double interval) {
+	public boolean setAudioSpectrumInterval(double interval) {
+		return false;
 		// To change body of implemented methods use File | Settings | File
 		// Templates.
 	}
@@ -201,13 +194,15 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 
 	
 	@Override
-	public void setAudioSpectrumNumBands(int numBands) {
+	public boolean setAudioSpectrumNumBands(int numBands) {
+		return false;
 		// To change body of implemented methods use File | Settings | File
 		// Templates.
 	}
 
 	@Override
-	public void setAudioSpectrumThreshold(int threshold) {
+	public boolean setAudioSpectrumThreshold(int threshold) {
+		return false;
 		// To change body of implemented methods use File | Settings | File
 		// Templates.
 	}
@@ -234,6 +229,7 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	public void setOnEndOfMedia(
 			TavEndOfMediaEventHandler tavEndOfMediaEventHandler) {
 		// TODO Auto-generated method stub
+		this.endOfMediaEventHandler = tavEndOfMediaEventHandler;
 		
 	}
 
@@ -248,9 +244,8 @@ public class AudioVisualizerPlayer implements TavMediaPlayer, LifecycleListener 
 	public void setAudioSpectrumListener(
 			TavAudioSpectrumListener audioSpectrumListener)
 	{
-		// TODO Auto-generated method stub
 		this.audioSpectrumListener = audioSpectrumListener;
+		
 	}
-
 }
 

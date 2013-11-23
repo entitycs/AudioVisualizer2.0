@@ -1,10 +1,13 @@
 package visualizer.visualizerFX;
 
+import java.io.File;
+import java.net.MalformedURLException;
+
 import javafx.scene.media.AudioEqualizer;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import application.mediaPlayer.interfacing.TavAudioSpectrumListener;
-import application.mediaPlayer.interfacing.TavEndOfMediaEventHandler;
+import application.event.TavEndOfMediaEventHandler;
+import application.listener.TavAudioSpectrumListener;
 import application.mediaPlayer.interfacing.TavMediaPlayer;
 
 public class TavMediaPlayerFX implements TavMediaPlayer
@@ -32,9 +35,23 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 	 * @param mediaLocation
 	 *            - the location of the media to play
 	 */
+
 	public void build(String mediaLocation)
 	{
-		Media media = new Media(mediaLocation.replace(" ", "%20"));
+		
+		File file = new File(mediaLocation);
+
+		try {
+			
+			mediaLocation = file.toURI().toURL().toExternalForm();
+			
+		} catch (MalformedURLException e) {
+			
+			System.err.println("There was an error in translating the absolute media location to a URL (JavaFX)");
+			e.printStackTrace();
+		}
+	
+		Media media = new Media(mediaLocation);
 
 		this.mediaPlayer = new MediaPlayer(media);
 
@@ -65,7 +82,7 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 		this.mediaPlayer.setOnEndOfMedia(this.endOfMediaHandler);
 
 	}
-
+	@Override
 	public AudioEqualizer getAudioEqualizer()
 	{
 		return this.mediaPlayer.getAudioEqualizer();
@@ -88,10 +105,10 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 	{
 		return this.mediaPlayer.getAudioSpectrumThreshold();
 	}
-
-	public double getCurrentTime()
+	@Override
+	public Double getCurrentTime()
 	{
-		return this.mediaPlayer.getCurrentTime().toSeconds();
+		return new Double(this.mediaPlayer.getCurrentTime().toSeconds());
 	}
 
 	@Override
@@ -99,7 +116,7 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 	{
 		return null;
 	}
-
+	@Override
 	public MediaPlayer getPlayer()
 	{
 		return this.mediaPlayer;
@@ -109,6 +126,7 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 	public void pauseTrack()
 	{
 		this.mediaPlayer.pause();
+
 	}
 
 	@Override
@@ -132,33 +150,37 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 			this.mediaPlayer.play();
 		}
 	}
-
-	public void setAudioSpectrumInterval(double interval)
+	@Override
+	public boolean setAudioSpectrumInterval(double interval)
 	{
 		this.mediaPlayer.setAudioSpectrumInterval(interval);
+		return true;
 	}
+
 
 	@Override
-	public void setAudioSpectrumListener(TavAudioSpectrumListener audioSpectrumListener)
-	{
-		this.mediaPlayer.setAudioSpectrumListener(audioSpectrumListener);
-	}
-
-	public void setAudioSpectrumNumBands(int numBands)
+	public boolean setAudioSpectrumNumBands(int numBands)
 	{
 		this.mediaPlayer.setAudioSpectrumNumBands(numBands);
+		return true;
 	}
-
-	public void setAudioSpectrumThreshold(int threshold)
+	@Override
+	public boolean setAudioSpectrumThreshold(int threshold)
 	{
 		this.mediaPlayer.setAudioSpectrumThreshold(threshold);
+		return true;
 	}
 
 	@Override
 	public void setMediaLocation(String mediaLocation)
 	{
-		stopTrack();
+
 		this.mediaLocation = mediaLocation;
+		
+		if (this.mediaPlayer != null)
+			if (this.mediaPlayer.getStatus() == MediaPlayer.Status.PAUSED)
+				return;
+		
 		build(mediaLocation);
 	}
 
@@ -173,21 +195,13 @@ public class TavMediaPlayerFX implements TavMediaPlayer
 	public void setOnEndOfMedia(
 			TavEndOfMediaEventHandler tavEndOfMediaEventHandler) {
 		// TODO Auto-generated method stub
-		this.endOfMediaHandler = tavEndOfMediaEventHandler;
+		this.mediaPlayer.setOnEndOfMedia(tavEndOfMediaEventHandler);
 	}
 
 	@Override
-	public void prevTrack()
+	public void setAudioSpectrumListener(TavAudioSpectrumListener audioSpectrumListener)
 	{
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void nextTrack()
-	{
-		// TODO Auto-generated method stub
-		
+		this.mediaPlayer.setAudioSpectrumListener(audioSpectrumListener);
 	}
 
 }

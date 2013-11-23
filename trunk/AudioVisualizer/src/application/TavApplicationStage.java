@@ -2,14 +2,30 @@ package application;
 
 import java.io.IOException;
 
+
+
+
+
+
+
+
+
+
+
+import application.event.NextButtonEventHandler;
+import application.event.PauseButtonEventHandler;
+import application.event.PlayButtonEventHandler;
 //import application.event.PlayerControlEvent;
-import application.event.PlaylistEvent;
-import application.mediaPlayer.interfacing.NextButtonEventHandler;
-import application.mediaPlayer.interfacing.PauseButtonEventHandler;
-import application.mediaPlayer.interfacing.PlayButtonEventHandler;
-import application.mediaPlayer.interfacing.PlaylistReadyButtonEventHandler;
-import application.mediaPlayer.interfacing.PrevButtonEventHandler;
-import application.mediaPlayer.interfacing.StopButtonEventHandler;
+import application.event.PlaylistReadyButtonEventHandler;
+import application.event.PrevButtonEventHandler;
+import application.event.StopButtonEventHandler;
+import application.listener.PlayerControlsEventListener;
+import application.listener.PlaylistReadyListener;
+import application.playlist.Playlist;
+import application.playlist.event.PlaylistEvent;
+import application.setting.event.PlayerChoiceSettingEventHandler;
+import application.setting.event.SettingsMenuItemEventHandler;
+import application.setting.listener.PlayerChoiceSettingListener;
 import application.visualizer.interfacing.VisualizerControlsEventListener;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -25,8 +41,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import listeners.PlayerControlsEventListener;
-import listeners.PlaylistReadyListener;
 
 /**
  * The application stage
@@ -55,7 +69,7 @@ public class TavApplicationStage extends VBox
 	private PlaylistReadyButtonEventHandler playHandler;
 	private PlayButtonEventHandler resumeHandler;
 	
-	private ListView<String> playlist;
+	private Playlist playlist;
 
 
 
@@ -127,7 +141,7 @@ public class TavApplicationStage extends VBox
 					.getItems().get(0)).getChildren().get(1)).getChildren()
 					.get(0);
 
-			playlist = extracted(playlistScroll);
+			playlist = new Playlist(playlistScroll.getContent());
 
 			appScene = new Scene(root, 1024, 668);
 
@@ -143,18 +157,17 @@ public class TavApplicationStage extends VBox
 		{
 			if ( i.getText().equals("Settings…"))
 			{
-				i.setOnAction(new SettingsMenuItemEventHandler());
+				i.setOnAction(new SettingsMenuItemEventHandler(TavApplicationManager.getInstance().getSettingManager()));
 			}
 			else if (i.getText().equals("AudioVisualizer"))
 			{
-				System.err.println("found");
 				browseSubmenuItems((Menu)i);
-
 			}
 		}
 	}
 	
 	private void browseSubmenuItems(Menu m){
+		PlayerChoiceSettingListener listener = TavApplicationManager.getInstance().getSettingManager();
 		for (MenuItem mi : m.getItems())
 		{
 			RadioMenuItem rmi = (RadioMenuItem) mi;
@@ -175,7 +188,7 @@ public class TavApplicationStage extends VBox
 						// TODO set the setting appropriately
 						rmi.setSelected(true);
 				}
-				mi.setOnAction(new SettingsAudioVisualizerChoiceEventHandler());
+				mi.setOnAction(new PlayerChoiceSettingEventHandler(listener));
 			}
 		}
 	}
@@ -201,11 +214,6 @@ public class TavApplicationStage extends VBox
 			final VisualizerControlsEventListener visualizerControlsListener)
 	{
 
-		playlist.setOnDragOver(new PlaylistEventHandler(PlaylistEvent.DRAGOVER));
-
-		playlist.setOnDragDropped(new PlaylistEventHandler(
-				PlaylistEvent.DRAGDROP));
-		
 		this.resumeHandler = new PlayButtonEventHandler(playerControlsListener);
 		
 		this.playHandler = new PlaylistReadyButtonEventHandler(playlistReadyListener,
@@ -234,15 +242,9 @@ public class TavApplicationStage extends VBox
 		return appScene;
 	}
 
-	public ListView<String> getPlaylist()
+	public Playlist getPlaylist()
 	{
 		return playlist;
-	}
-
-	@SuppressWarnings("unchecked")
-	private ListView<String> extracted(ScrollPane playlistScroll)
-	{
-		return (ListView<String>) playlistScroll.getContent();
 	}
 
 	public  StopButtonEventHandler getStopHandler(){

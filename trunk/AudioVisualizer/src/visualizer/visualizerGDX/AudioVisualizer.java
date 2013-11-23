@@ -10,7 +10,8 @@ import org.farng.mp3.MP3File;
 
 import visualizer.visualizerGDX.visualizations.Visualization;
 import visualizer.visualizerGDX.visualizations.grid.Grid_SrcMid_BassMid;
-import application.mediaPlayer.interfacing.TavAudioSpectrumListener;
+import application.event.TavEndOfMediaEventHandler;
+import application.listener.TavAudioSpectrumListener;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.sun.glass.ui.Application;
 
 
 /**
@@ -65,7 +67,7 @@ public class AudioVisualizer extends Game implements Runnable
 
 	private boolean paused = true;
 	private boolean playing = false;
-
+	private boolean stopped = false;
 	private boolean opening = false;
 
 	private boolean closing = false;
@@ -80,6 +82,7 @@ public class AudioVisualizer extends Game implements Runnable
 	// if called from the application manager, this value will not be null
 	private String mediaLocation = null;
 	private TavAudioSpectrumListener audioSpectrumListener;
+	private TavEndOfMediaEventHandler endOfMediaEventHandler;
 
 	public AudioVisualizer(String arg)
 	{
@@ -263,6 +266,7 @@ public class AudioVisualizer extends Game implements Runnable
 	{
 		paused = true;
 		playing = false;
+		stopped = false;
 		songName = "";
 		if (playbackThread != null)
 			while (playbackThread.isAlive())
@@ -313,8 +317,11 @@ public class AudioVisualizer extends Game implements Runnable
 
 					Thread.yield();
 				}
-
+				System.err.println("end of media");
 				visualization.clear();
+				playing = false;
+				if (! stopped )
+					visApp.postRunnable(endOfMediaEventHandler);
 			}
 		});
 
@@ -377,7 +384,6 @@ public class AudioVisualizer extends Game implements Runnable
 	public void dispose()
 	{
 		// synchronize with the thread
-		paused = true;
 		playing = false;
 
 		if (playbackThread != null)
@@ -470,8 +476,9 @@ public class AudioVisualizer extends Game implements Runnable
 
 	public void stop()
 	{
+		stopped = true;
 		playing = false;
-
+		
 		if (playbackThread != null)
 			while (playbackThread.isAlive())
 			{
@@ -482,5 +489,18 @@ public class AudioVisualizer extends Game implements Runnable
 			TavAudioSpectrumListener audioSpectrumListener)
 	{
 		this.audioSpectrumListener = audioSpectrumListener;
+	}
+
+	public void setonEndOfMedia(
+			TavEndOfMediaEventHandler tavEndOfMediaEventHandler)
+	{
+		this.endOfMediaEventHandler = tavEndOfMediaEventHandler;
+		
+	}
+
+	public void setApp(LwjglApplication visApp2)
+	{
+		this.visApp = visApp2;
+		
 	}
 }

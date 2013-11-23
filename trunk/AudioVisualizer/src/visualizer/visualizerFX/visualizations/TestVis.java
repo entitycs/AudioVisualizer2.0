@@ -101,7 +101,6 @@ public class TestVis implements TavVisualization
 	{
 
 		videoWidth = 0;
-		System.out.println(videoWidth);
 
 		root = (AnchorPane) scene.getRoot();
 		initY = (float) root.getHeight();
@@ -134,8 +133,8 @@ public class TestVis implements TavVisualization
 		slider.setLayoutX(50);
 		slider.setLayoutY(canvasCenterY);
 		slider.setScaleY(2.0);
-		slider.setMin(-50);
-		slider.setMax(50);
+		slider.setMin(-100);
+		slider.setMax(100);
 		slider.setValue(40);
 		slider.setShowTickLabels(true);
 		slider.setShowTickMarks(true);
@@ -149,15 +148,8 @@ public class TestVis implements TavVisualization
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val)
 			{
-				//sliderCenterY = new_val.intValue();
-				
-				
-				// initY -= sliderCenterY;
-				System.err.println(sliderCenterY);
-				// mediaPlayerManager.setAudioSpectrumThreshold((int)
-				// (threshold));
-				// threshold = new_val.intValue();
-				// numBands = threshold/2;
+				//threshold = new_val.intValue();
+				barW = new_val.intValue();
 			}
 		});
 		Slider slider2 = new Slider();
@@ -178,15 +170,15 @@ public class TestVis implements TavVisualization
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val)
 			{
-				//threshold = new_val.intValue();
-				barW = new_val.intValue();
+				threshold = new_val.intValue();
 			}
 		});
 		visualizerPane.getChildren().add(canvas);
 
 		visualizerPane.getChildren().add(new Pane());
-		visualizerPane.getChildren().add(slider);
-		visualizerPane.getChildren().add(slider2);
+		root.getChildren().add(slider2);
+		root.getChildren().add(slider);
+		//visualizerPane.getChildren().add(slider2);
 
 		if (!(bartopStack.size() < 200))
 			bartopStack.clear();
@@ -350,7 +342,7 @@ public class TestVis implements TavVisualization
 			System.out.println("new width " + newSceneWidth.intValue());
 			// acanvas.setWidth((Double) newSceneWidth);
 			initX = newSceneWidth.floatValue();
-			canvas.setWidth(initX);
+			acanvas.setWidth(initX);
 		}
 	}
 
@@ -370,7 +362,7 @@ public class TestVis implements TavVisualization
 			System.out.println("New height" + newSceneHeight);
 			// acanvas.setHeight((Double) newSceneHeight);
 			initY = (newSceneHeight.floatValue());
-			canvas.setHeight(initY);
+			acanvas.setHeight(initY);
 		}
 	}
 
