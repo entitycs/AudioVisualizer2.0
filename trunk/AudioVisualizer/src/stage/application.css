@@ -1,0 +1,16 @@
+.root {
+	    -fx-font-size: 14pt;
+    -fx-font-family: "Courier New";
+}
+
+.color1 {
+	
+}
+
+.color2 {
+	/* -fx-background-color: rgb(95, 98, 73); */
+}
+
+.player-control-shape {
+	-fx-blend-mode:multiply;
+}

@@ -1,71 +1,71 @@
 package application;
 
+import java.io.File;
 import java.net.MalformedURLException;
 
-import exception.TavUnimplementedFunctionalityException;
-import application.event.TavEndOfMediaEventHandler;
-import application.listener.PlayerControlsEventListener;
-import application.listener.PlaylistReadyListener;
+import stage.TavApplicationStage;
+import stage.mediaPlayer.listener.TavPlayerControlsListener;
+import stage.playlist.listener.TavPlaylistReadyListener;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import application.exception.TavUnimplementedFunctionalityException;
+import application.mediaPlayer.event.TavEndOfMediaEventHandler;
 import application.mediaPlayer.interfacing.TavMediaPlayer;
-import visualizer.visualizerFX.TavMediaPlayerFX;
-import visualizer.visualizerGDX.AudioVisualizerPlayer;
+import application.mediaPlayer.listener.TavMetaDataListener;
+import audiovisualizer.fx.mediaPlayer.TavMediaPlayerFX;
+import audiovisualizer.gdx.AudioVisualizerPlayer;
 
 /**
- *   Think of the media player manager as a mechanical 'arm' in an 
- *   advanced jukebox, which itself has a manager - the application manager,
- *   and a playlist (along with plenty of other things not mentioned here).
- *   
- *   What follows are system requirements, then
- *   functionalities of the media player manager are listed.
- *   
- *   Requirements:
- *   
- *   1) You can put any working media player inside of the jukebox so long as
- *   it can i.) play the given media, ii.) pause, and iii.) stop.  
- *   
- *   2) The media player in place should not need to know the contents 
- *   of the playlist other than what it is currently being asked to play.
- *   
- *   3) The application manager needs to know the type of media player
- *   being used (either stand-alone or combination--visualizer-included).
- *   
- *   4) The application manager needs to know what advanced functionality
- *   the media player in place can or cannot provide.
- *   
- *   5) The media player can be swapped out but treated equally in the
- *   context of the application manager.
- *   
- *   Requirements 3 and 4 are required before and each time any media
- *   is provided to the media player, as requirement 5 means the 
- *   media player may have changed.
- *   
- *   Functions: 
- *   
- *   The mechanical jukebox arm (this media player manager), can ...
- *   
- *   1) grab (or be handed) the next song to be played.  It then
- *   feeds the selected song to the media player.  Additionally...
- *   
- *   2) 
- *   The mechanical arm can read the type of media player which has been
- *   put in place and report this information to the system managing this arm.
- *   
- *   Since the media player in use may change in between fetching the
- *   next song, this information is provided to the application manager before
- *   the media is played. 
- *   
- *   3) 
- *   The system managing this arm can direct the arm to put a known
- *   media player type into place.
- *   
- *   4) 
- *   The arm attempts to interface advanced functionality  with the media 
- *   player in place (functionality beyond the three requirements listed
- *   above) and it throws exceptions if an attempt is made to use advanced
- *   interfaced methods that the currently attached media player does not 
- *   support.
- *   
- *                       
+ * Think of the media player manager as a mechanical 'arm' in an advanced
+ * jukebox, which itself has a manager - the application manager, and a playlist
+ * (along with plenty of other things not mentioned here).
+ * 
+ * What follows are system requirements, then functionalities of the media
+ * player manager are listed.
+ * 
+ * Requirements:
+ * 
+ * 1) You can put any working media player inside of the jukebox so long as it
+ * can i.) play the given media, ii.) pause, and iii.) stop.
+ * 
+ * 2) The media player in place should not need to know the contents of the
+ * playlist other than what it is currently being asked to play.
+ * 
+ * 3) The application manager needs to know the type of media player being used
+ * (either stand-alone or combination--visualizer-included).
+ * 
+ * 4) The application manager needs to know what advanced functionality the
+ * media player in place can or cannot provide.
+ * 
+ * 5) The media player can be swapped out but treated equally in the context of
+ * the application manager.
+ * 
+ * Requirements 3 and 4 are required before and each time any media is provided
+ * to the media player, as requirement 5 means the media player may have
+ * changed.
+ * 
+ * Functions:
+ * 
+ * The media player manager (i.e. the mechanical jukebox arm ), can ...
+ * 
+ * 1) grab (or be handed) the next song to be played. It then feeds the selected
+ * song to the media player. Additionally...
+ * 
+ * 2) The mechanical arm can read the type of media player which has been put in
+ * place and report this information to the system managing this arm.
+ * 
+ * Since the media player in use may change in between fetching the next song,
+ * this information is provided to the application manager before the media is
+ * played.
+ * 
+ * 3) The system managing this arm can direct the arm to put a known media
+ * player type into place.
+ * 
+ * 4) The arm attempts to interface advanced functionality with the media player
+ * in place (functionality beyond the three requirements listed above) and it
+ * throws exceptions if an attempt is made to use advanced interfaced methods
+ * that the currently attached media player does not support.
+ * 
  *                       _______
  *                  _.-'\       /'-._
  *              _.-'    _\ .-. /_    '-._
@@ -73,18 +73,22 @@ import visualizer.visualizerGDX.AudioVisualizerPlayer;
  *         .'    .-'    _||   ||_    '-.    '.
  *        /    .'    .-' ||___|| '-.    '.    \
  *       /   .'   .-' _.-'-----'-._ '-.   '.   \
- *      /   /   .' .-'      ARM    '-. '-. '.   \
- *     /   /   / .' ~  |=|========.   '-.\   \   \
- *    /   /   /.'......|.|        \\    '.\   \   \
- *    |  /   //::::::::|:|~    |~SONG~|  \\   \  |
- *    |  |  |/:::::::::|:|        .|      \|  |  |
- *   .--.|__||___      | |_* '-----------' ___||.--.
- *   .'   '----. .-----| |---^MEDIA PLAYER^ ---'   '.
+ *      /   /   .' .-'  ___ARM____ '-. '-. '.   \
+ *     /   /   / .' ~  |=|-------.|   '-.\   \   \
+ *    /   /   /.'...   |.|       ||     '.\   \   \
+ *    |  /   //....    |.|    |~SONG~|    \\   \  |
+ *    |  |  |/....     |.|                 \|  |  |
+ *   .--.|__||___      | |'--------------'__ _||.--.
+ *   .'   '----. .-----| || Media Player | ---'   '.
+ *   (_________________| |__________________________)
+ *   |______________________________________________|
  *  '.________' |~SONG~|    V    |~|==|~| '________.'
  *  .'--------. |~|==|~|    V    |~SONG~| .--------'.
  *  '.________' |~SONG~|PLAY:LIST|~|==|~| '________.'
- *  .'--------. |~|==|~|====V====|~SONG~| .--------'.
- *  '.________' |~SONG~|====V====|~|==|~| '________.'
+ *  .'--------. |~|==|~|    V    |~SONG~| .--------'.
+ *  '.________' |~SONG~|    V    |~|==|~| '________.'
+ *   (______________________:______________________)
+ *    |===========================================|
  *    |  |  ||  ____ | | | |:| | | | ____  ||  |  |
  *    |  |  || |    || | | |:| | | ||    | ||  |  |
  *    |  |  || |____||AUDIO : DATA ||____| ||  |  |
@@ -115,12 +119,8 @@ import visualizer.visualizerGDX.AudioVisualizerPlayer;
  *    '._|__.'                             '.__|_.'
  *
  */
-
-/**
- * @author
- */
-public class TavMediaPlayerManager implements PlaylistReadyListener,
-		PlayerControlsEventListener
+public class TavMediaPlayerManager implements TavPlaylistReadyListener,
+		TavPlayerControlsListener
 {
 
 	private TavMediaPlayer mediaPlayer;
@@ -149,8 +149,8 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 		this.usingComboPlayer = true;
 		if (this.comboPlayer != null)
 			this.comboPlayer = this.comboPlayer;
-			//this.comboPlayer.dispose();
-		else 
+		// this.comboPlayer.dispose();
+		else
 			this.comboPlayer = new AudioVisualizerPlayer();
 
 		this.standAlonePlayer = null;
@@ -173,7 +173,7 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 	{
 		if (this.mediaPlayer.getAudioEqualizer() == null)
 
-			throw new TavUnimplementedFunctionalityException(
+			throw new TavUnimplementedFunctionalityException (
 					"The media player in use did not provide an audio equalizer.");
 		else
 			return this.mediaPlayer.getAudioEqualizer();
@@ -185,14 +185,16 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 	 * Return the current time as reported by the media player if the media
 	 * player has implemented this ability
 	 * 
-	 * @return
+	 * @return the current media time in seconds, or 0.0 if the media is not
+	 *         playing or if the media player in use does not provide this
+	 *         function.
 	 */
 	public double getCurrentTime()
 			throws TavUnimplementedFunctionalityException
 	{
 		if (this.mediaPlayer.getCurrentTime() == null)
 
-			throw new TavUnimplementedFunctionalityException(
+			throw new TavUnimplementedFunctionalityException (
 					"The media player in use did not provide a current time.");
 
 		return mediaPlayer.getCurrentTime().doubleValue();
@@ -218,30 +220,38 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 	 * 
 	 * @throws MalformedURLException
 	 */
-	private void playLoadedFromBeginning(final String mediaLocation) throws MalformedURLException,
-			IllegalStateException
+	private void playLoadedFromBeginning(final String mediaLocation)
+			throws MalformedURLException, IllegalStateException
 	{
+		// return if we have loaded null
+		if (mediaLocation == null)
+			return;
 
 		if (this.mediaPlayer == null)
-			throw new IllegalStateException(
+			throw new IllegalStateException (
 					"An attempt to play media was made when no media player was set");
 
 		// stop whatever track is playing, if any
-		//this.mediaPlayer.stopTrack();
-
+		// this.mediaPlayer.stopTrack();
 
 		if (mediaPlayer != null)
-		{   this.mediaPlayer.stopTrack();
-			this.mediaPlayer.setMediaLocation(TavApplicationStage.getInstance().getPlaylist().current());
-						this.mediaPlayer.setOnEndOfMedia(new TavEndOfMediaEventHandler(TavApplicationManager.getInstance()));
+		{
+			this.mediaPlayer.stopTrack();
+			this.mediaPlayer.setMediaLocation (TavApplicationStage
+					.getInstance().getPlaylist().current());
+			this.mediaPlayer.setOnEndOfMedia (new TavEndOfMediaEventHandler (
+					TavApplicationManager.getInstance()));
+			TavMetaDataListener metaDataListener = TavApplicationStage.getInstance ();
+			this.mediaPlayer.setMetaDataListener (metaDataListener);
+			this.mediaPlayer.setAudioSpectrumListener (TavApplicationManager
+					.getInstance());
 
-						this.mediaPlayer
-					.setAudioSpectrumListener(TavApplicationManager.getInstance());
 			this.mediaPlayer.playlistReady();
-		} else
+		} else{ System.err.println("Tried to play media when no media player was built.  Reverting...");
 			TavApplicationManager.getInstance().playlistReady();
+		}
 
-		if (!this.usingComboPlayer)
+		if ( !this.usingComboPlayer)
 		{
 
 			// we assume that each time a new song is played, the previous
@@ -256,74 +266,110 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 			// the media player and visualizer should be on the same layer and
 			// we have some control over them in
 			// this management layer
-			this.mediaPlayer.setAudioSpectrumInterval(TavApplicationManager
+			this.mediaPlayer.setAudioSpectrumInterval (TavApplicationManager
 					.getInstance().getVisualizerManager().getVisualizer()
 					.getVisualization().getInterval());
-			this.mediaPlayer.setAudioSpectrumNumBands(TavApplicationManager
+			this.mediaPlayer.setAudioSpectrumNumBands (TavApplicationManager
 					.getInstance().getVisualizerManager().getVisualizer()
 					.getVisualization().getNumBands());
-			this.mediaPlayer.setAudioSpectrumThreshold(TavApplicationManager
+			this.mediaPlayer.setAudioSpectrumThreshold (TavApplicationManager
 					.getInstance().getVisualizerManager().getVisualizer()
 					.getVisualization().getThreshold());
 		}
 
 	}
-
+	
 	/**
 	 * sets up the next song for the 1-file per instance media player
 	 */
-	public void next()
+	public boolean next()
 	{
 		try
 		{
-			playLoadedFromBeginning(TavApplicationStage.getInstance().getPlaylist().next());
+			String mediaLocation = TavApplicationStage.getInstance()
+					.getPlaylist().next();
+			if (mediaLocation == null)
+				return false;
+			playLoadedFromBeginning (mediaLocation);
 
 		} catch (MalformedURLException e)
 		{
-			System.err.println("Error initiating next track in playlist");
+			System.err.println ("Error initiating next track in playlist");
 			e.printStackTrace();
+			return false;
 		}
-
+		return true;
 	}
 
 	public void pause()
 	{
-		mediaPlayer.pauseTrack();
+		if (mediaPlayer != null)
+			mediaPlayer.pauseTrack();
 	}
 
-	public void play()
+	public boolean play()
 	{
-		mediaPlayer.setMediaLocation(TavApplicationStage.getInstance().getPlaylist().current());
+		String mediaLocation = TavApplicationStage.getInstance()
+				.getPlaylist().current();
+
+		if (mediaLocation == null)
+			return false;
+
+		mediaPlayer.setMediaLocation (mediaLocation);
+
 		mediaPlayer.playTrack();
+
+		return true;
 	}
 
 	@Override
 	public void playlistReady()
 	{
+		String mediaLocation = TavApplicationStage.getInstance()
+				.getPlaylist().current();
+
+		if (mediaLocation == null)
+			return;
 		// Because a song which is currently playing may not be located
 		// at the same index it was when playback began - for instance if
 		// a song is deleted from the playlist and was located at an index
 		// lower the the index of the currently playing song.
 		updatePlayer();
-		next();
-	}
 
-	public void prev()
-	{
 		try
 		{
-			playLoadedFromBeginning(TavApplicationStage.getInstance().getPlaylist().prev());
-
+			playLoadedFromBeginning (mediaLocation);
 		} catch (MalformedURLException e)
 		{
-			System.err.println("Error initiating previous track at index in playlist");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e)
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	public boolean prev()
+	{
+		try
+		{
+			playLoadedFromBeginning (TavApplicationStage.getInstance()
+					.getPlaylist().prev());
+
+		} catch (MalformedURLException e)
+		{
+			System.err
+					.println ("Error initiating previous track at index in playlist");
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	public void setAudioSpectrumInterval(double interval)
 	{
-		this.mediaPlayer.setAudioSpectrumInterval(interval);
+		this.mediaPlayer.setAudioSpectrumInterval (interval);
 	}
 
 	/**
@@ -331,7 +377,7 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 	 */
 	public void setAudioSpectrumThreshold(int threshold)
 	{
-		this.mediaPlayer.setAudioSpectrumThreshold(threshold);
+		this.mediaPlayer.setAudioSpectrumThreshold (threshold);
 	}
 
 	/**
@@ -339,8 +385,8 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 	 */
 	private void setMediaPlayerAndType()
 	{
-		if (TavApplicationManager.getInstance().getSettingManager().getPlayerSetting()
-				.equals("Default"))
+		if (TavApplicationManager.getInstance().getSettingManager()
+				.getPlayerSetting().equals ("Default"))
 
 			this.mediaPlayer = comboVisualizerPlayer();
 
@@ -364,7 +410,7 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 	 */
 	public void spectrumUpdate(float[] spectrum)
 	{
-		TavApplicationStage.getInstance().consoleFloatArray(spectrum);
+		TavApplicationStage.getInstance().consoleFloatArray (spectrum);
 	}
 
 	/**
@@ -385,11 +431,10 @@ public class TavMediaPlayerManager implements PlaylistReadyListener,
 
 	public void stop()
 	{
-		mediaPlayer.stopTrack();
-		TavApplicationStage.getInstance().resetPlayHandler();
-		// because playlistReady will be the new event handler for
-		// the play button, we decrement the playlist so that
-		TavApplicationStage.getInstance().getPlaylist().prev();
+		if (mediaPlayer != null)
+			mediaPlayer.stopTrack();
+
+		// TavApplicationStage.getInstance().getPlaylist().prev();
 	}
 
 	public void updatePlayer()

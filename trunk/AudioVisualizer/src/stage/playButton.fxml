@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
+<?import java.lang.*?>
+<AnchorPane styleClass="color1" fx:id="playButton" maxHeight="47.0" maxWidth="32.0" minHeight="47.0" minWidth="32.0" prefHeight="47.0"
+            prefWidth="32.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <children>
+        <Rectangle id="" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" focusTraversable="true" height="47.0"
+                   layoutX="0.0" layoutY="0.0" mouseTransparent="false" smooth="false" stroke="BLACK"
+                   strokeType="INSIDE" strokeWidth="0.0" width="32.0"/>
+        <Polygon styleClass="player-control-shape" fill="DODGERBLUE" layoutX="17.0" layoutY="34.0" mouseTransparent="false" rotate="90.0"
+                 scaleX="0.17999999423217775" scaleY="0.1773999983708308" stroke="TRANSPARENT" strokeType="INSIDE">
+            <points>
+                <Double fx:value="-50.0"/>
+                <Double fx:value="40.0"/>
+                <Double fx:value="50.0"/>
+                <Double fx:value="40.0"/>
+                <Double fx:value="0.0"/>
+                <Double fx:value="-60.0"/>
+            </points>
+        </Polygon>
+    </children>
+</AnchorPane>

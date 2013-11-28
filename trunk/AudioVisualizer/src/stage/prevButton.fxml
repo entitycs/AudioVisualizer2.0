@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Polygon?>
+<?import javafx.scene.shape.Rectangle?>
+<?import java.lang.*?>
+<AnchorPane styleClass="color1" id="" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="47.0" prefWidth="32.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="47.00000762939453" layoutX="0.0"
+                   layoutY="0.0" mouseTransparent="false" smooth="false" stroke="BLACK" strokeType="INSIDE"
+                   strokeWidth="0.0" width="32.0"/>
+        <Polygon styleClass="player-control-shape" fill="DODGERBLUE" layoutX="18.0" layoutY="35.0" mouseTransparent="false" rotate="270.0" scaleX="0.14"
+                 scaleY="0.13999986000000356" stroke="TRANSPARENT" strokeType="INSIDE">
+            <points>
+                <Double fx:value="-50.0"/>
+                <Double fx:value="40.0"/>
+                <Double fx:value="50.0"/>
+                <Double fx:value="40.0"/>
+                <Double fx:value="0.0"/>
+                <Double fx:value="-60.0"/>
+            </points>
+        </Polygon>
+        <Polygon styleClass="player-control-shape" fill="DODGERBLUE" focusTraversable="false" layoutX="11.0" layoutY="35.0" mouseTransparent="false"
+                 rotate="270.0" scaleX="0.14" scaleY="0.14" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+            <points>
+                <Double fx:value="-50.0"/>
+                <Double fx:value="40.0"/>
+                <Double fx:value="50.0"/>
+                <Double fx:value="40.0"/>
+                <Double fx:value="0.0"/>
+                <Double fx:value="-60.0"/>
+            </points>
+        </Polygon>
+    </children>
+</AnchorPane>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<AnchorPane styleClass="color1" id="pauseButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="47.0" prefWidth="32.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="47.0" layoutX="3.0" layoutY="0.0"
+                   smooth="false" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="25.67498779296875"/>
+        <Rectangle styleClass="player-control-shape" arcHeight="0.0" arcWidth="0.0"
+                   fill="linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, 0x1e90ffff 0.0%, 0x1e90ffff 33.0%, 0xffffffff 33.0%, 0xffffffff 66.0%, 0x1e90ffff 66.0%, 0x1e90ffff 100.0%)"
+                   height="14.0" layoutX="7.0" layoutY="16.0" mouseTransparent="false" scaleX="1.0" scaleY="1.0"
+                   smooth="false" stroke="TRANSPARENT" strokeType="OUTSIDE" strokeWidth="0.0"
+                   width="17.739898681640625"/>
+    </children>
+</AnchorPane>

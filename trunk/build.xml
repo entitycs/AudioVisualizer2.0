@@ -1,73 +1,143 @@
-<project name="AudioVisualizer" default="build" xmlns:fx="javafx:com.sun.javafx.tools.ant">
+<?xml version="1.0" encoding="UTF-8"?>
+	<project name="AudioVisualizer" default="build" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+		
+	    <property name="project.dir"         value="AudioVisualizer"/>
+	    <property name="src.dir"             value="${project.dir}/src"/>
+	    <property name="libs.dir"            value="${project.dir}/libs"/>
+	    <property name="p-res.dir"           value="${project.dir}/res"/>
+	    <property name="p-opt.dir"           value="${project.dir}/opt"/>
 
-    <property name="project.dir"         value="AudioVisualizer"/>
-    <property name="src.dir"             value="${project.dir}/src"/>
-    <property name="libs.dir"            value="${project.dir}/libs"/>
-    <property name="p-res.dir"           value="${project.dir}/res"/>
+	    <property name="build.dir"           value="build"/>
+	    <property name="build.libs.dir"      value="${build.dir}/libs"/>
+		<property name="classes.dir"         value="${build.dir}/classes"/>
+	    <property name="b-res.dir"           value="${build.dir}/res"/>
+	    <property name="b-opt.dir"           value="${build.dir}/opt"/>
+		
+	    <property name="main-class"          value="application.Main"/>
+		
+	<target name="init-fx-tasks">
+		<path id="fxant">
+			<filelist>
+				<file name="${java.home}\..\lib\ant-javafx.jar"/>
+				<file name="${java.home}\lib\jfxrt.jar"/>
+			</filelist>
+		</path>
+	
+		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"      
+			uri="javafx:com.sun.javafx.tools.ant"
+			classpathref="fxant"/>
+	</target>
+		
+		<!-- Create the build folder and required libs
+			for running as a JavaFX application with external jars -->
+		
+	<target name="setup-staging-area">
+		
+		<!-- Create directories -->
+		
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.libs.dir}" />
+		<mkdir dir="${b-res.dir}"/>		
+		
+		<!-- Set classpath -->
+	    <path id="classpath">
+	        <fileset dir="." includes="${libs.dir}/*"/>
+	    </path>
 
-    <property name="build.dir"           value="build"/>
-    <property name="classes.dir"         value="${build.dir}/classes"/>
-    <property name="b-res.dir"           value="${build.dir}/res"/>
-
-    <property name="main-class"          value="application.Main"/>
-
-
-    <path id="classpath">
-        <fileset dir="." includes="${libs.dir}/*"/>
-    </path>
-
-
-    <target name="init-fx-tasks">
-        <path id="fxant">
-            <filelist>
-                <file name="${java.home}\..\lib\ant-javafx.jar"/>
-                <file name="${java.home}\lib\jfxrt.jar"/>
-            </filelist>
-        </path>
-
-        <taskdef resource="com/sun/javafx/tools/ant/antlib.xml" uri="javafx:com.sun.javafx.tools.ant" classpathref="fxant"/>
-    </target>
-
-
-    <target name='compile'>
-        <mkdir dir="${classes.dir}" />
-
-        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
-
+		
+	</target>
+		
+		
+	<!-- COMPILE -->
+			
+	<target name='do-compile'>
+		<mkdir dir="${classes.dir}" />
+		<copy todir="${build.libs.dir}">
+			<fileset dir="${libs.dir}">
+				<exclude name="**/*jfxrt.jar"/>
+				<exclude name="**/*javafx*.jar"/>
+			</fileset>
+		</copy>
+		
+		<!-- Copy project-res references -->
+		
+		<copy todir="${b-res.dir}">
+			<fileset dir="${p-res.dir}">
+				 <include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<!-- Copy project-opt references -->
+		<copy todir="${b-opt.dir}">
+			<fileset dir="${p-opt.dir}">
+				 <include name="**/*"/>
+			</fileset>
+		</copy>
+		
+		<javac includeantruntime="false" source="1.7" target="1.7" srcdir="${src.dir}" destdir="${classes.dir}" encoding="Cp1252" classpathref="classpath">
+			<classpath>
+				<fileset dir="${build.libs.dir}">
+					<include name="**/*apple"/>
+					</fileset>
+				<filelist>
+					<file name="${java.home}\lib\jfxrt.jar"/>
+				</filelist>
+			</classpath>
+		</javac>
+		
         <!-- Copy over non-Java Files  -->
         <copy todir="${classes.dir}">
             <fileset dir="${src.dir}">
-                <include name="**/*.class"/>
                 <include name="**/*.css"/>
                 <include name="**/*.fxml"/>
+            	<include name="**/*.tav"/>
            </fileset>
         </copy>
-
-        <copy todir="${classes.dir}/res">
-            <fileset dir="${p-res.dir}"/>
-        </copy>
-    </target>
-        
-
-    <target name="build" depends="compile, init-fx-tasks">
-        <fx:jar destfile="${build.dir}/${ant.project.name}.jar">
-            <fx:application name="${ant.project.name}" mainClass="${main-class}"/>
-
-            <fx:resources>
-                <fx:fileset dir="." includes="${libs.dir}/*"/>
-            </fx:resources>
-
-            <fileset dir="${classes.dir}"/>
-        </fx:jar>
-    </target>
-
+	</target>
+		
+	<target name="build" depends="setup-staging-area, do-compile, init-fx-tasks">
+		
+		<fx:resources id="appRes">
+			<fx:fileset dir="${build.dir}" includes="${project.dir}.jar"/>
+			<fx:fileset dir="${build.dir}" includes="libs/*"/>
+			<fx:fileset dir="${b-res.dir}" includes="**/*"/>
+		</fx:resources> 
+		
+		<fx:application id="fxApplication"
+			name="test"
+			mainClass="application.Main"
+			toolkit="fx"
+		/>
+	
+		<mkdir dir="${classes.dir}/META-INF" />
+		<mkdir dir="${classes.dir}/res" />
+		<fx:jar destfile="${build.dir}/${project.dir}.jar">
+			<fx:application refid="fxApplication"/>
+			<fileset dir="${classes.dir}">
+			</fileset>
+			
+			<fileset dir="${project.dir}">
+			   <exclude name="**/libs/**" />
+			   <exclude name="**/src/**" />
+			</fileset>
+			<fx:resources refid="appRes"/>
+			
+			<manifest>
+				<attribute name="Implementation-Vendor" value="test"/>
+				<attribute name="Implementation-Title" value="test"/>
+				<attribute name="Implementation-Version" value="test23"/>
+				<attribute name="JavaFX-Feature-Proxy" value="None"/>
+			</manifest>
+		</fx:jar>
+		<sleep seconds="2"/>
+		<delete dir="${classes.dir}" />
+		<delete dir="${b-res.dir}"/>	
+		
+	</target>
 
     <target name="run" depends="build">
-        <java fork="true" classname="${main-class}">
-            <classpath>
-                <path refid="classpath"/>
-                <path location="${build.dir}/${ant.project.name}.jar"/>
-            </classpath>
+                  <java jar="${build.dir}/${project.dir}.jar" fork="true">
         </java>
     </target>
 
@@ -75,5 +145,4 @@
     <target name="clean">
         <delete dir="${build.dir}"/>
     </target>
-
 </project>

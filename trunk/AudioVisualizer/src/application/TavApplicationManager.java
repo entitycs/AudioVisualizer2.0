@@ -2,38 +2,35 @@ package application;
 
 import java.io.IOException;
 
-import exception.TavUnimplementedFunctionalityException;
-import application.listener.PlayerControlsEventListener;
-import application.listener.PlaylistReadyListener;
-import application.listener.TavAudioSpectrumListener;
-import application.visualizer.interfacing.VisualizerControlsEventListener;
+import stage.TavApplicationStage;
+import stage.mediaPlayer.listener.TavPlayerControlsListener;
+import stage.playlist.listener.TavPlaylistReadyListener;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import application.exception.TavUnimplementedFunctionalityException;
+import application.mediaPlayer.listener.TavAudioSpectrumListener;
+import application.mediaPlayer.listener.TavEndOfMediaListener;
+import application.mediaPlayer.listener.TavMetaDataListener;
+import application.setting.listener.TavMediaPlayerChoiceSettingListener;
+import application.setting.listener.TavVisualizerDimensionSettingListener;
+import application.visualizer.listener.TavVisualizerControlsListener;
 
 /**
- * The TavApplicationManager communicates with the media player and visualizer
- * managers as well as with the application stage (GUI w/o visualization window)
+ * The TavApplicationManager communicates with the component management layer
+ * which includes the media player, visualizer, and settings managers).
  */
 public class TavApplicationManager implements TavAudioSpectrumListener,
-		PlaylistReadyListener
+		TavPlaylistReadyListener, TavEndOfMediaListener,
+		EventHandler<WindowEvent>
 {
-	private final TavMediaPlayerManager mediaPlayerManager;
-	private final TavVisualizerManager visualizerManager;
-	private final TavSettingManager settingManager;
-
-	// not being used functionaly. Will remove soon
-	public enum Status
-	{
-		STOPPED, PLAYING, PAUSED
-	};
-
-	private Status currentStatus = Status.STOPPED;
+	private TavMediaPlayerManager mediaPlayerManager;
+	private TavVisualizerManager visualizerManager;
+	private TavSettingsManager settingManager;
 
 	private TavApplicationManager()
 	{
-		this.mediaPlayerManager = new TavMediaPlayerManager();
-		this.visualizerManager = new TavVisualizerManager();
-		this.settingManager = new TavSettingManager();
 	}
 
 	/**
@@ -59,15 +56,34 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	 */
 	public void setStage(Stage primaryStage) throws IOException
 	{
-		PlaylistReadyListener t = this;
-		PlayerControlsEventListener a = mediaPlayerManager;
-		VisualizerControlsEventListener v = visualizerManager;
-
+		this.mediaPlayerManager = new TavMediaPlayerManager();
+		this.visualizerManager = new TavVisualizerManager();
+		if (this.settingManager == null)
+		{
+			this.settingManager = new TavSettingsManager();
+			try
+			{
+				this.settingManager.loadFromSettingsFile();
+			} catch (IOException e)
+			{
+				System.err.println ("Unable to load settings from file");
+				e.printStackTrace();
+			}
+		}
+		TavVisualizerDimensionSettingListener g = this.settingManager;
+		TavMediaPlayerChoiceSettingListener o = this.settingManager;
 		// instantiate the application stage and initialize its event handlers
-		TavApplicationStage.getInstance().initHandlers(t, a, v);
+		TavApplicationStage.getInstance()
+				.setVisualizerDimensionSettingListener (g);
+		TavApplicationStage.getInstance().setPlayerChoiceSettingListener (o);
+		
+		TavEndOfMediaListener t = this;
+		TavPlayerControlsListener a = mediaPlayerManager;
+		TavVisualizerControlsListener v = visualizerManager;
+		TavApplicationStage.getInstance().initHandlers (t, a, v);
 
 		// pass the application scene to the primary stage
-		primaryStage.setScene(TavApplicationStage.getAppScene());
+		primaryStage.setScene (TavApplicationStage.getAppScene());
 
 		// show the primary stage
 		primaryStage.show();
@@ -77,9 +93,9 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	 * Playlist Ready
 	 * 
 	 * This method is called once the user has pressed play after building a
-	 * playlist with one or more songs.
+	 * playlist with one or more songs. It is also currently called when the
+	 * media player instance in use implements the end of media event handler.
 	 * 
-	 * @param playlist
 	 */
 	public void playlistReady()
 	{
@@ -89,14 +105,13 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 			// do nothing (return)
 			return;
 		}
-		System.out.println("PlaylistReady (app manager)");
-		// inform the sub management layer that the playlist is ready
 
+		// inform the sub management layer that the playlist is ready
 		updateComponents();
 
 		this.visualizerManager.playlistReady();
-
 		this.mediaPlayerManager.playlistReady();
+		this.visualizerManager.mediaPlayerReady();
 	}
 
 	/**
@@ -115,30 +130,6 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	}
 
 	/**
-	 * Set Status
-	 * 
-	 * The sub management layer should set the status but this is not being
-	 * enforced as of now
-	 * 
-	 * @param statusUpdate
-	 *            is the status the application will be changed to
-	 */
-	public void setStatus(Status statusUpdate)
-	{
-		this.currentStatus = statusUpdate;
-	}
-
-	/**
-	 * Get Status
-	 * 
-	 * @return the current application status
-	 */
-	public Status getStatus()
-	{
-		return this.currentStatus;
-	}
-
-	/**
 	 * Get Media Player Manager
 	 * 
 	 * The application manager should be aware of any time the media player
@@ -150,7 +141,7 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	{
 		return this.mediaPlayerManager;
 	}
-	
+
 	/**
 	 * Get Visualizer Manager
 	 * 
@@ -172,11 +163,23 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	 * 
 	 * @return the system setting manager
 	 */
-	public TavSettingManager getSettingManager()
+	public TavSettingsManager getSettingManager()
 	{
+		if (this.settingManager == null)
+		{
+			this.settingManager = new TavSettingsManager();
+			try
+			{
+				this.settingManager.loadFromSettingsFile();
+			} catch (IOException e)
+			{
+				System.err.println ("Unable to load settings from file");
+				e.printStackTrace();
+			}
+		}
 		return this.settingManager;
 	}
-	
+
 	/**
 	 * Spectrum data update given short[] magnitudes
 	 * 
@@ -195,9 +198,9 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 		// Platform.runLater( new
 		// TavSpectrumDataUpdater(timestamp,duration,magnitudes,phases,
 		// timestamp - this.mediaPlayerManager.getCurrentTime()));
-		for (double i = 0; i < 50; i++)
-			magnitudes[(int) i] /= 10.0;
-		TavApplicationStage.getInstance().consoleFloatArray(magnitudes);
+		for (double i = 0; (i < 50 && i < magnitudes.length); i++)
+			magnitudes[(int) i] /= (5.0 - i / 10) / 2;
+		TavApplicationStage.getInstance().consoleFloatArray (magnitudes);
 	}
 
 	/**
@@ -214,17 +217,44 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	{
 		try
 		{
-			Platform.runLater(new TavSpectrumDataUpdater(timestamp, duration,
+			Platform.runLater (new TavSpectrumDataUpdater (timestamp, duration,
 					magnitudes, phases, timestamp
 							- this.mediaPlayerManager.getCurrentTime()));
-			
+
 		} catch (TavUnimplementedFunctionalityException e)
 		{
 			System.err
-					.println("Error: The visualization listener will now be detached from the media player.");
+					.println ("Error: The visualization listener will now be detached from the media player.");
 
 			e.printStackTrace();
-			mediaPlayerManager.getMediaPlayer().setAudioSpectrumListener(null);
+			mediaPlayerManager.getMediaPlayer()
+					.setAudioSpectrumListener (null);
 		}
+	}
+
+	@Override
+	public void simulateStop()
+	{
+		TavApplicationStage.getInstance().getPlayerControls().stop();
+	}
+
+	@Override
+	public void handle(WindowEvent arg0)
+	{
+		// stopping the media player runnables (not helping)
+		if (this.mediaPlayerManager.getMediaPlayer() != null)
+			this.mediaPlayerManager.getMediaPlayer().dispose();
+		// still getting an error on exit which does not occur when
+		// closing from eclipse.
+	}
+
+	@Override
+	public void playlistReady(boolean b)
+	{
+		if ( !b)
+			return;
+
+		playlistReady();
+		this.mediaPlayerManager.next();
 	}
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.net.URL?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="playlistAnchor" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="355.0000999999975" prefWidth="527.999977929685" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <children>
+    <ScrollPane id="playlistScrollPane" fitToHeight="true" fitToWidth="true" opacity="1.0" prefHeight="311.0" prefViewportHeight="228.0" prefViewportWidth="286.0" prefWidth="391.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <content>
+        <ListView fx:id="playlist" depthTest="DISABLE" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" pickOnBounds="true" prefHeight="354.0" prefWidth="606.0" style="-fx-background-color:green    ;">
+          <stylesheets>
+            <URL value="@application.css" />
+          </stylesheets>
+        </ListView>
+      </content>
+    </ScrollPane>
+  </children>
+</AnchorPane>
