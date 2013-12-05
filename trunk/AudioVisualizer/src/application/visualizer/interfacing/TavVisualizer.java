@@ -6,7 +6,7 @@ public interface TavVisualizer
 
 	//public abstract void setVisualization(int visualizationIndex);
 	
-	public void setVisualizationIndex(int visualizationIndex);
+	public TavVisualization setVisualizationIndex(int visualizationIndex);
 
 	public void setWidth(double width);
 

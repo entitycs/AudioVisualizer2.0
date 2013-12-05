@@ -3,6 +3,7 @@ package audiovisualizer.gdx.visualizer.visualization.bars;
 import audiovisualizer.gdx.AudioVisualizer;
 import audiovisualizer.gdx.visualizer.visualization.Visualization;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -35,8 +36,7 @@ public abstract class Bars extends Visualization
 	public Bars(SpriteBatch batch, float[] spectrum)
 	{
 		super (batch, spectrum);
-
-		colors = new Texture (new FileHandle ("res/colors-borders.png"));
+		colors = new Texture (Gdx.files.internal ("res/colors-borders.png"));
 	}
 
 	/**

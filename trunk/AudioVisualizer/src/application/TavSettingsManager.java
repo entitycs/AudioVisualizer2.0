@@ -53,7 +53,6 @@ public class TavSettingsManager implements TavSettingsApplier,
 
 	private void writeToSettingsFile(String settingName, String settingValue)
 	{
-
 		try (FileOutputStream fos = new FileOutputStream (this.settingsFilePath))
 		{
 			settings.setProperty (settingName, settingValue);
@@ -115,8 +114,8 @@ public class TavSettingsManager implements TavSettingsApplier,
 		}
 	}
 
-	public void mediaPlayerChoiceSetting(String text)
-	{
+	public void setPlayerSetting(String text)
+	{ 
 		writeToSettingsFile (availableSettings[0], (text));
 		// if there is a media player in action, stop it.
 		if (TavApplicationManager.getInstance().getMediaPlayerManager()
@@ -143,7 +142,7 @@ public class TavSettingsManager implements TavSettingsApplier,
 			for (int i = 0; i < availableSettings.length; i++)
 			{
 				if (settings.containsKey (availableSettings[i]))
-				{
+				{ 
 					applySettingsFromFile (availableSettings[i],
 							settings.getProperty (availableSettings[i]));
 				}
@@ -154,8 +153,8 @@ public class TavSettingsManager implements TavSettingsApplier,
 	private void applySettingsFromFile(String setting, String value)
 	{
 		if (setting == availableSettings[PLAYER_CHOICE])
-		{
-			mediaPlayerChoiceSetting (value);
+		{   
+			setPlayerSetting (value);
 		} else if (setting == availableSettings[VIS_WIDTH])
 		{
 			// TODO
