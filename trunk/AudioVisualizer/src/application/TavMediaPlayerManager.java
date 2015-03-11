@@ -1,13 +1,10 @@
 package application;
 
-import java.io.File;
 import java.net.MalformedURLException;
 
 import stage.TavApplicationStage;
 import stage.mediaPlayer.listener.TavPlayerControlsListener;
 import stage.playlist.listener.TavPlaylistReadyListener;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import application.exception.TavUnimplementedFunctionalityException;
 import application.mediaPlayer.event.TavEndOfMediaEventHandler;
 import application.mediaPlayer.interfacing.TavMediaPlayer;
@@ -147,10 +144,10 @@ public class TavMediaPlayerManager implements TavPlaylistReadyListener,
 	private TavMediaPlayer comboVisualizerPlayer()
 	{
 		this.usingComboPlayer = true;
-		if (this.comboPlayer != null)
-			this.comboPlayer = this.comboPlayer;
-		// this.comboPlayer.dispose();
-		else
+//		if (this.comboPlayer != null)
+//			this.comboPlayer = this.comboPlayer;
+//		// this.comboPlayer.dispose();
+//		else
 			this.comboPlayer = new AudioVisualizerPlayer();
 
 		this.standAlonePlayer = null;

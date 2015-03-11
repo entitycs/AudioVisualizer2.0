@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="trunk/AudioVisualizer/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-audio-natives.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-audio.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-backend-lwjgl-natives.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-backend-lwjgl.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-natives.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-sources.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/jid3lib-0.5.4.jar"/>
+	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/jfxrt.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

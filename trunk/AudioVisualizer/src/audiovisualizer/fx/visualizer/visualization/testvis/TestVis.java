@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -40,7 +41,7 @@ public class TestVis implements TavVisualizationCustomizable
 	private Slider barWidthSlider;
 	private Slider topHatHeightSlider;
 
-	private double interval = .025;
+	private double interval = .020;
 
 	private RenderTestVisFrame child;
 
@@ -114,7 +115,6 @@ public class TestVis implements TavVisualizationCustomizable
 								ObservableValue<? extends Number> ov,
 								Number old_val, Number new_val)
 						{
-
 							child.setTestVar1 (new_val.intValue());
 						}
 					});
@@ -266,5 +266,10 @@ public class TestVis implements TavVisualizationCustomizable
 		this.barWidthSlider = (Slider) levelControls.lookup ("#MajorOffset");
 		this.topHatHeightSlider = (Slider) levelControls
 				.lookup ("#MinorOffset");
+		((Label) levelControls.lookup("#MajorThresholdTxt")).setText("Main Bar Sensitivity");
+		((Label) levelControls.lookup("#MinorThresholdTxt")).setText("Accent Bar Sensitivity");
+		((Label) levelControls.lookup("#MajorOffsetTxt")).setText("Main Bar Size");
+		((Label) levelControls.lookup("#MinorOffsetTxt")).setText("Accent Bar Position");
+		
 	}
 }

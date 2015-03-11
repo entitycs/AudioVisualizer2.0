@@ -265,9 +265,9 @@ public class TavVisualizerManager implements TavPlaylistReadyListener,
 		}
 		if ( this.visualizer.getVisualization ().isCustomizable ())
 		{
-		TavVisualizationCustomizable t = (TavVisualizationCustomizable) this.visualizer
+			TavVisualizationCustomizable t = (TavVisualizationCustomizable) this.visualizer
 				.getVisualization ();
-		t.setCustomizeLevels (customizeVidSliders);
+			t.setCustomizeLevels (customizeVidSliders);
 		}
 	}
 }

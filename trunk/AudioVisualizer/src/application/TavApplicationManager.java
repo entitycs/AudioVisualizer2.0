@@ -12,7 +12,6 @@ import javafx.stage.WindowEvent;
 import application.exception.TavUnimplementedFunctionalityException;
 import application.mediaPlayer.listener.TavAudioSpectrumListener;
 import application.mediaPlayer.listener.TavEndOfMediaListener;
-import application.mediaPlayer.listener.TavMetaDataListener;
 import application.setting.listener.TavMediaPlayerChoiceSettingListener;
 import application.setting.listener.TavVisualizerDimensionSettingListener;
 import application.visualizer.listener.TavVisualizerControlsListener;
