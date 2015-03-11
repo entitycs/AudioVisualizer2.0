@@ -70,6 +70,8 @@ public class Main extends Application
 	 */
 	private void buildApp(Stage primaryStage) throws IOException
 	{
+		TavApplicationManager.getInstance ().initialize();
+		
 		TavApplicationManager.getInstance().setStage (primaryStage);
 
 		primaryStage.addEventHandler (WindowEvent.WINDOW_CLOSE_REQUEST,

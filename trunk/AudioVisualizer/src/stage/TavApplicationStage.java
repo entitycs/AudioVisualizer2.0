@@ -9,6 +9,7 @@ import stage.playlist.TavPlaylist;
 import stage.playlist.listener.TavPlaylistReadyListener;
 import stage.visualizer.TavItemToColorChosenEventHandler;
 import stage.visualizer.TavItemToColorColorSetEventHandler;
+import stage.visualizer.TavVisualizationChosenEventHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,6 +29,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import application.TavApplicationManager;
 import application.mediaPlayer.TavMetaData;
 import application.mediaPlayer.listener.TavMetaDataListener;
 import application.setting.event.TavMediaPlayerChoiceSettingEventHandler;
@@ -65,7 +67,7 @@ public class TavApplicationStage extends VBox implements TavMetaDataListener
 
 	private ChoiceBox<String> colorItemChoiceBox;
 
-	// private ChoiceBox<String> visualizationChoiceBox;
+	private ChoiceBox<String> visualizationChoiceBox;
 
 	private ColorPicker colorPicker;
 
@@ -149,8 +151,8 @@ public class TavApplicationStage extends VBox implements TavMetaDataListener
 
 			AnchorPane colorChooserAnchor = (AnchorPane) visListPane
 					.lookup ("#ColorChooser");
-			// this.visualizationChoiceBox = (ChoiceBox<String>) visListPane
-			// .lookup ("#visualizationChoiceBox");
+			this.visualizationChoiceBox = (ChoiceBox<String>) visListPane
+			.lookup ("#visualizationChoiceBox");
 			this.colorChooserToolbar = (ToolBar) colorChooserAnchor
 					.lookup ("#ColorChooserToolBar");
 			this.customizeVidSliders = (GridPane) visListPane
@@ -278,9 +280,8 @@ public class TavApplicationStage extends VBox implements TavMetaDataListener
 		}
 		this.playerControls.initHandlers (playlistReadyListener,
 				playerControlsListener);
-		// this.visualizationChoiceBox.getSelectionModel().selectedIndexProperty().addListener
-		// (new ColorItemChoiceListener(visualizerControlsListener,
-		// colorPicker));
+		this.visualizationChoiceBox.getSelectionModel().selectedIndexProperty().addListener
+		 (new TavVisualizationChosenEventHandler(visualizerControlsListener));
 		this.colorItemChoiceBox
 				.getSelectionModel()
 				.selectedIndexProperty()

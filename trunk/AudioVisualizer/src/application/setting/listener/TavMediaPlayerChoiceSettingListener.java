@@ -8,7 +8,7 @@ public interface TavMediaPlayerChoiceSettingListener
 	 * @param player
 	 *            is the media player to be used with the system.
 	 */
-	public void mediaPlayerChoiceSetting(String player);
+	public void setPlayerSetting(String player);
 
 	/**
 	 * Get the media player choice setting.

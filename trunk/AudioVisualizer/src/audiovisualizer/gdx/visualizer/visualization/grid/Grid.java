@@ -52,8 +52,8 @@ public abstract class Grid extends Visualization
 	public Grid(SpriteBatch batch, float[] spectrum)
 	{
 		super (batch, spectrum);
-
-		square = new Sprite (new Texture (Gdx.files.local ("res/square4.png")));
+		// patched in post 775 revision
+		square = new Sprite (new Texture (Gdx.files.internal ("res/square4.png")));
 
 		scheme = lighterblueish;
 		// scheme = schemes[rand.nextInt(schemes.length)].copy();

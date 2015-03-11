@@ -22,20 +22,26 @@ public class TavVisualizerManager implements TavPlaylistReadyListener,
 	private double width = 689;
 	private int colorToChangeIndex = -1;
 
+	private GridPane visualizationControls;
+
 	public TavVisualizerManager()
 	{
-		init ();
+		init (-1);
 	}
 
-	private void init()
+	private void init(int i)
 	{
 		// default standalone visualizer
 		// does nothing
 		// when mediaPlayerFX is not being used
-		if (this.visualizer != null)
-			return;
+		//if (this.visualizer != null )
+		//	return;
 
-		this.visualizer = new TavVisualizerFX ();
+		if (i < 0)
+			this.visualizer = new TavVisualizerFX ();
+		else
+			this.visualizer = new TavVisualizerFX (i);
+
 		this.visualizer.setHeight (this.height);
 		this.visualizer.setWidth (this.width);
 	}
@@ -77,7 +83,7 @@ public class TavVisualizerManager implements TavPlaylistReadyListener,
 		// initialize the visualizer and visualization on every playlistReady
 		// call
 		if (this.visualizer == null)
-			init ();
+			init (-1);
 
 		// this will display the visualization again if it was closed
 		if ( !visualizer.isShowing ()) // TODO setting
@@ -87,9 +93,6 @@ public class TavVisualizerManager implements TavPlaylistReadyListener,
 
 		// build involves setting listeners and event handlers
 		visualizer.build ();
-
-		// note that .build() is never called but is implemented for combo
-		// players
 	}
 
 	/**
@@ -179,6 +182,10 @@ public class TavVisualizerManager implements TavPlaylistReadyListener,
 		// media player and visualizer are disjoint
 		{
 			this.visualizer.setVisualizationIndex (index.intValue ());
+			init(index.intValue ());
+			initVisualizationControls();
+			this.playlistReady ();
+			
 		}
 
 	}
@@ -249,25 +256,35 @@ public class TavVisualizerManager implements TavPlaylistReadyListener,
 	@Override
 	public void setVisualizationControls(GridPane customizeVidSliders)
 	{
+		this.visualizationControls = customizeVidSliders;
+		initVisualizationControls();
+	}
+	
+	private void initVisualizationControls()
+	{ 
 		// if using combo player
 		if (TavApplicationManager.getInstance ().getMediaPlayerManager ()
 				.usingComboPlayer ())
 		{
-			if ( ((TavComboMediaPlayer) TavApplicationManager.getInstance ()
-					.getMediaPlayerManager ().getMediaPlayer ())
-					.getVisualization ().isCustomizable ())
-			{
-				TavVisualizationCustomizable t = (TavVisualizationCustomizable) ((TavComboMediaPlayer) TavApplicationManager
-						.getInstance ().getMediaPlayerManager ()
-						.getMediaPlayer ()).getVisualization ();
-				t.setCustomizeLevels (customizeVidSliders);
-			}
+//			if ( ((TavComboMediaPlayer) TavApplicationManager.getInstance ()
+//					.getMediaPlayerManager ().getMediaPlayer ())
+//					.getVisualization ().isCustomizable ())
+//			{
+//				TavVisualizationCustomizable t = (TavVisualizationCustomizable) ((TavComboMediaPlayer) TavApplicationManager
+//						.getInstance ().getMediaPlayerManager ()
+//						.getMediaPlayer ()).getVisualization ();
+//				t.setCustomizeLevels (this.visualizationControls);
+//			}
 		}
 		if ( this.visualizer.getVisualization ().isCustomizable ())
 		{
 			TavVisualizationCustomizable t = (TavVisualizationCustomizable) this.visualizer
 				.getVisualization ();
+<<<<<<< HEAD
 			t.setCustomizeLevels (customizeVidSliders);
+=======
+		t.setCustomizeLevels (this.visualizationControls);
+>>>>>>> origin/master
 		}
 	}
 }

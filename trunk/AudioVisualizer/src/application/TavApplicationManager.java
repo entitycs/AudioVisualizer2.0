@@ -2,13 +2,13 @@ package application;
 
 import java.io.IOException;
 
-import stage.TavApplicationStage;
-import stage.mediaPlayer.listener.TavPlayerControlsListener;
-import stage.playlist.listener.TavPlaylistReadyListener;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import stage.TavApplicationStage;
+import stage.mediaPlayer.listener.TavPlayerControlsListener;
+import stage.playlist.listener.TavPlaylistReadyListener;
 import application.exception.TavUnimplementedFunctionalityException;
 import application.mediaPlayer.listener.TavAudioSpectrumListener;
 import application.mediaPlayer.listener.TavEndOfMediaListener;
@@ -30,6 +30,7 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 
 	private TavApplicationManager()
 	{
+
 	}
 
 	/**
@@ -49,12 +50,10 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 	}
 
 	/**
-	 * @param primaryStage
-	 *            is the JavaFX primary stage (visualizer window not included)
-	 * @throws IOException
+	 * Do not attempt to initialize inside of constructor, as the managers
+	 * in this function depend on this object having already been constructed.
 	 */
-	public void setStage(Stage primaryStage) throws IOException
-	{
+	protected void initialize(){
 		this.mediaPlayerManager = new TavMediaPlayerManager();
 		this.visualizerManager = new TavVisualizerManager();
 		if (this.settingManager == null)
@@ -75,6 +74,16 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 		TavApplicationStage.getInstance()
 				.setVisualizerDimensionSettingListener (g);
 		TavApplicationStage.getInstance().setPlayerChoiceSettingListener (o);
+		this.mediaPlayerManager.updatePlayer ();
+	}
+	
+	/**
+	 * @param primaryStage
+	 *            is the JavaFX primary stage (visualizer window not included)
+	 * @throws IOException
+	 */
+	protected void setStage(Stage primaryStage) throws IOException
+	{
 		
 		TavEndOfMediaListener t = this;
 		TavPlayerControlsListener a = mediaPlayerManager;
@@ -197,9 +206,9 @@ public class TavApplicationManager implements TavAudioSpectrumListener,
 		// Platform.runLater( new
 		// TavSpectrumDataUpdater(timestamp,duration,magnitudes,phases,
 		// timestamp - this.mediaPlayerManager.getCurrentTime()));
-		for (double i = 0; (i < 50 && i < magnitudes.length); i++)
+		/*for (double i = 0; (i < 50 && i < magnitudes.length); i++)
 			magnitudes[(int) i] /= (5.0 - i / 10) / 2;
-		TavApplicationStage.getInstance().consoleFloatArray (magnitudes);
+		TavApplicationStage.getInstance().consoleFloatArray (magnitudes);*/
 	}
 
 	/**
