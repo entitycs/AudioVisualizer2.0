@@ -212,8 +212,8 @@ public class TavMediaPlayerFX implements TavMediaPlayer, Runnable
 	@Override
 	public void dispose()
 	{
-		if (mediaPlayer != null)
-			mediaPlayer.stop ();
+		mediaPlayer.stop ();
+		System.out.println(mediaPlayer.statusProperty ());
 	}
 
 	@Override

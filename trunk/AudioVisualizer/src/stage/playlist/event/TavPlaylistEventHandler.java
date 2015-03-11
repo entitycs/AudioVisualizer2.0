@@ -66,8 +66,8 @@ public class TavPlaylistEventHandler implements EventHandler<DragEvent>
 
 			filePath = file.getAbsolutePath();
 
-			if (filePath.trim().endsWith(".mp3") || filePath.trim().endsWith(".wav"))
-				this.listener.add (filePath.trim().replace("%20", " "));
+			if (filePath.trim().endsWith (".mp3"))
+				this.listener.add (filePath.trim().replace ("%20", " "));
 		}
 	}
 }

@@ -24,7 +24,7 @@
         <URL value="@../application.css" />
       </stylesheets>
     </Label>
-    <ChoiceBox id="visualizationChoiceBox" layoutX="14.0" layoutY="46.0" prefWidth="240.0">
+    <ChoiceBox id="visualizerChoiceBox" layoutX="14.0" layoutY="46.0" prefWidth="240.0">
       <items>
         <FXCollections fx:factory="observableArrayList">
           <String fx:value="Visualization 1" />

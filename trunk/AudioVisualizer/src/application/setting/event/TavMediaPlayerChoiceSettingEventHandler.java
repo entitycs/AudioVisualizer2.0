@@ -20,7 +20,7 @@ public class TavMediaPlayerChoiceSettingEventHandler implements
 	@Override
 	public void handle(ActionEvent event)
 	{
-		listener.setPlayerSetting ( ((RadioMenuItem) event.getSource())
+		listener.mediaPlayerChoiceSetting ( ((RadioMenuItem) event.getSource())
 				.getId());
 	}
 

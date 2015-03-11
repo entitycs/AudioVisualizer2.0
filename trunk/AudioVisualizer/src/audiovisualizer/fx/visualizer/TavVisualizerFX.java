@@ -71,21 +71,6 @@ public class TavVisualizerFX implements TavVisualizer
 								.heightProperty()));
 	}
 
-	public TavVisualizerFX(int i)
-	{
-		this();
-		this.visualization = this.visualizations[i%numVisualizations];
-		
-		// Tie the canvas width to the scene width
-		scene.widthProperty().addListener (
-				new TavSceneWidthChangedEventHandler (canvas.widthProperty(),
-						visualization.widthProperty()));
-		scene.heightProperty().addListener (
-				new TavSceneHeightChangedEventHandler (
-						canvas.heightProperty(), visualization
-								.heightProperty()));
-	}
-
 	/*
 	 * private Canvas canvas; private Stage stage; private Scene scene; private
 	 * Pane root; private final StackPane visualizerPane = new StackPane();
@@ -137,16 +122,10 @@ public class TavVisualizerFX implements TavVisualizer
 	}
 
 	@Override
-	public TavVisualization setVisualizationIndex(int visualizationIndex)
-	{this.visualizerStage.close ();
+	public void setVisualizationIndex(int visualizationIndex)
+	{
 		if (visualizationIndex > 0
 				&& visualizationIndex < this.visualizations.length)
-		{			
-			this.visualization = visualizations[visualizationIndex%numVisualizations];
-
-		}
-//			setHeight(this.initHeight.doubleValue ());
-//			setWidth(this.initWidth.doubleValue ());
-			return this.visualization;
+			this.visualization = visualizations[visualizationIndex];
 	}
 }

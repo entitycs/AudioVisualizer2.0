@@ -168,4 +168,10 @@ public class TavSettingsManager implements TavSettingsApplier,
 		}
 
 	}
+
+	@Override
+	public void mediaPlayerChoiceSetting(String player) {
+		// TODO Auto-generated method stub
+		
+	}
 }

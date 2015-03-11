@@ -12,7 +12,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -23,130 +22,157 @@ import application.mediaPlayer.TavMetaData;
 import application.visualizer.interfacing.TavVisualizationCustomizable;
 import application.visualizer.interfacing.TavVisualizationHeight;
 import application.visualizer.interfacing.TavVisualizationWidth;
-import audiovisualizer.fx.visualizer.visualization.testvis.RenderTestVisFrame;
 
 //import javafx.scene.effect.Reflection;
 public class TestVis2 implements TavVisualizationCustomizable
 {
+	private final TavVisualizationWidth initX;
+	private final TavVisualizationHeight initY;
 
 	// remove one of the 2s if not using octave
 
 	private final StackPane visualizerPane = new StackPane();
-
 	private AnchorPane root;
+	private float[] prevMagnitudes;
+	private GraphicsContext gc;
 
+	float futureTop = 0;
 	boolean running = false;
-	private boolean built = false;
+	private float barW;
+	private final Stop[] stops = new Stop[] { new Stop (0, Color.DARKVIOLET),
+			new Stop (1, Color.BLACK) };
+	private final Stop[] stopsInner = new Stop[] { new Stop (0, Color.BLACK),
+			new Stop (.2, Color.YELLOWGREEN), new Stop (.5, Color.BLACK),
+			new Stop (.8, Color.YELLOWGREEN), new Stop (1, Color.BLACK) };
+	private final Stop[] stopsInner2 = new Stop[] { new Stop (.2, Color.BLACK),
+			new Stop (.5, Color.BLUE), new Stop (.9, Color.BLACK) };
+	private final LinearGradient lg1 = new LinearGradient (0, 0, 0, .5, true,
+			CycleMethod.REFLECT, stops);
+	private final LinearGradient lg2 = new LinearGradient (0, 0, 0, .5, true,
+			CycleMethod.REFLECT, stopsInner);
+	private final LinearGradient lg3 = new LinearGradient (0, 0, 0, .5, true,
+			CycleMethod.NO_CYCLE, stopsInner2);
 
+	Canvas canvas;
+	float canvasCenterY;
+	float canvasCenterX;
 	Stage stage;
 	Scene scene;
 
-	private AnchorPane root2;
+	private final ArrayBlockingQueue<float[]> bartopStack = new ArrayBlockingQueue<float[]> (
+			2000);
 
-	private Slider thresholdDBSlider;
-	private Slider thresholdTopHatSlider;
-	private Slider barWidthSlider;
-	private Slider topHatHeightSlider;
+	private boolean built = false;
+	private AnchorPane controlPane;
 
+	private int numBands = 200;
+	private int threshold = -90;
 	private double interval = .025;
 
-	private RenderTestVis2Frame child;
+	private final float[] bartopArray = new float[numBands];
+	private TavMetaData songMeta;
+	private Slider slider;
+	private Slider slider2;
 
 	public TestVis2(Canvas canvas, GraphicsContext gc, Stage visualizerStage,
 			AnchorPane controlPane)
 	{
-		this.root = ((AnchorPane) visualizerStage.getScene().getRoot());
-		this.root2 = controlPane;
+		// TODO Auto-generated constructor stub
+		this.initX = new TavVisualizationWidth();
+		this.initY = new TavVisualizationHeight();
+		this.root = (AnchorPane) visualizerStage.getScene().getRoot();
+		this.canvas = canvas;
+		this.gc = canvas.getGraphicsContext2D();
+		this.controlPane = controlPane;
 		this.stage = visualizerStage;
-		child = new RenderTestVis2Frame (canvas, gc);
 	}
 
 	public AnchorPane getPane()
 	{
-		return this.root2;
+		return this.controlPane;
 	}
 
 	// @Override
 	public void build2(Number videoWidth)
 	{
-		if (built)
-			return;
 
 		videoWidth = 0;
-		root = (AnchorPane) scene.getRoot();
-		root.getChildren().remove (visualizerPane);
-		root.getChildren().add (visualizerPane);
 
-		child.heightProperty().setValue ((float) root.getHeight());
-		child.widthProperty().setValue ((float) (root.getWidth()));
-		if (this.barWidthSlider != null)
+		if (built)
+			return;
+		videoWidth = 0;
+
+		initY.setValue ((float) root.getHeight());
+		initX.setValue ((float) (root.getWidth()));
+		barW = initX.intValue() / numBands;
+
+		canvasCenterY = initY.floatValue() / 2.0f;
+		canvasCenterX = initX.floatValue() / 2.0f;
+		// gc2 = ...
+		gc.setLineWidth (barW);
+		prevMagnitudes = new float[numBands];
+
+		// make sure prevMagnitudes are not greater than
+		// the maximum of any future magnitude (i.e. 0)
+		for (int i = 0; i < numBands; i++)
+			prevMagnitudes[i] = threshold * 2;
+
+		// motionBlur.setRadius(5);
+		// gc.setEffect(motionBlur);
+		slider = new Slider();
+		slider.setLayoutX (50);
+		slider.setLayoutY (canvasCenterY);
+		slider.setScaleY (2.0);
+		slider.setMin ( -100);
+		slider.setMax (100);
+		slider.setValue (40);
+		slider.setShowTickLabels (true);
+		slider.setShowTickMarks (true);
+		slider.setMajorTickUnit (50);
+		slider.setMinorTickCount (5);
+		slider.setBlockIncrement (10);
+		slider.setOrientation (Orientation.VERTICAL);
+		slider.valueProperty().addListener (new ChangeListener<Number>()
 		{
-			this.barWidthSlider.valueProperty().addListener (
-					new ChangeListener<Number>()
-					{
-						@Override
-						public void changed(
-								ObservableValue<? extends Number> ov,
-								Number old_val, Number new_val)
-						{
-							// threshold = new_val.intValue();
-							child.setBarWidth (new_val.intValue());
-						}
-					});
-		}
-
-		if (this.thresholdDBSlider != null)
+			@Override
+			public void changed(ObservableValue<? extends Number> ov,
+					Number old_val, Number new_val)
+			{
+				// threshold = new_val.intValue();
+				barW = new_val.intValue();
+			}
+		});
+		slider2 = new Slider();
+		slider2.setLayoutX (450);
+		slider2.setLayoutY (50);
+		slider2.setMin ( -150);
+		slider2.setMax ( -1);
+		slider2.setValue (threshold);
+		slider2.setShowTickLabels (true);
+		slider2.setShowTickMarks (true);
+		slider2.setMajorTickUnit (50);
+		slider2.setMinorTickCount (5);
+		slider2.setBlockIncrement (10);
+		slider2.setOrientation (Orientation.VERTICAL);
+		slider2.valueProperty().addListener (new ChangeListener<Number>()
 		{
-			this.thresholdDBSlider.valueProperty().addListener (
-					new ChangeListener<Number>()
-					{
-						@Override
-						public void changed(
-								ObservableValue<? extends Number> ov,
-								Number old_val, Number new_val)
-						{
-							child.setThreshold (new_val.intValue());
-						}
-					});
-			// to move the slider onto the visualization, do the following
-			// root.getChildren().add (this.thresholdDBSlider);
-		}
+			@Override
+			public void changed(ObservableValue<? extends Number> ov,
+					Number old_val, Number new_val)
+			{
+				threshold = new_val.intValue();
+			}
+		});
 
-		if (this.thresholdTopHatSlider != null)
-		{
-			this.thresholdTopHatSlider.valueProperty().addListener (
-					new ChangeListener<Number>()
-					{
-						@Override
-						public void changed(
-								ObservableValue<? extends Number> ov,
-								Number old_val, Number new_val)
-						{
+		root.getChildren().add (slider2);
+		root.getChildren().add (slider);
+		// visualizerPane.getChildren().add(slider2);
 
-							child.setTestVar1 (new_val.intValue());
-						}
-					});
-		}
+		if ( ! (bartopStack.size() < 1999))
+			bartopStack.clear();
 
-		if (this.topHatHeightSlider != null)
-		{
-			this.topHatHeightSlider.valueProperty().addListener (
-					new ChangeListener<Number>()
-					{
-						@Override
-						public void changed(
-								ObservableValue<? extends Number> ov,
-								Number old_val, Number new_val)
-						{
-							child.setTestVar2 (new_val.intValue());
-						}
-					});
-		}
-
-		visualizerPane.getChildren().add (new Pane());
-
+		bartopStack.add (bartopArray);
 		built = true;
-		child.setBuilt (true);
 
 	}
 
@@ -155,24 +181,10 @@ public class TestVis2 implements TavVisualizationCustomizable
 		return built;
 	}
 
-	private double diffPlayerTime;
-	private double diffTimeStamp;
-
 	public void spectrumDataUpdate(double timestamp, double duration,
 			float[] magnitudes, float[] phases, double offset)
 	{
-
-		child.updateMagnitudes (magnitudes);
-
-		//
-		// TavApplicationManager.getInstance().getMediaPlayerManager()
-		// .getMediaPlayer().setAudioSpectrumInterval(interval);
-		// TavApplicationManager.getInstance().getMediaPlayerManager()
-		// .getMediaPlayer().setAudioSpectrumNumBands(numBands * 2);
-		// TavApplicationManager.getInstance().getMediaPlayerManager()
-		// .getMediaPlayer().setAudioSpectrumThreshold(threshold);
-		child.run();
-		// Platform.runLater(child);
+		Platform.runLater (new HelloRunnable (magnitudes, this.gc));
 	}
 
 	// @Override
@@ -180,14 +192,117 @@ public class TestVis2 implements TavVisualizationCustomizable
 	// {
 	// }
 
+	public class HelloRunnable implements Runnable
+	{
+
+		private final float[] magnitudes;
+
+		public HelloRunnable(final float[] magnitudes, GraphicsContext gc)
+		{
+			this.magnitudes = magnitudes;
+			run();
+
+		}
+
+		public void main(String[] args)
+		{
+			run();
+		}
+
+		@Override
+		public void run()
+		{
+			if ( !built || bartopStack.size() < 1500)
+				return;
+
+			final float conversion = initY.floatValue()
+					/ (2 * (threshold * 2));
+
+			final float canvasCenterY = initY.floatValue() / 2.0f - 30;
+
+			final float canvasCenterX = initX.floatValue() / 2.0f;
+
+			final float[] magnitudes = this.magnitudes;
+
+			gc.fillRect (0, 0, initX.doubleValue(), initY.doubleValue());
+
+			/** Clear the entire frame and paint one frame onto the canvas */
+			gc.setFill (Color.BLACK);
+			gc.setStroke (Color.YELLOWGREEN);
+			for (int i = 0; i < numBands; i++)
+			{
+
+				final float xPos = barW * i;
+				final float octalMagnitude = magnitudes[i] + magnitudes[2 * i];
+
+				final boolean louderThanBefore = octalMagnitude > prevMagnitudes[i];
+				// POSITIONING "CURRENT"
+				final float currentTop = bartopStack.peek()[i];
+				final float currentBottom = (float) (canvas.getHeight() - currentTop) - 60;
+				final float currentRight = xPos + canvasCenterX;
+				final float currentLeft = canvasCenterX - xPos;
+
+				if (louderThanBefore)
+				{
+					gc.setStroke (lg1);
+					gc.setLineWidth ( (barW / 2) + 200 % 3);
+					prevMagnitudes[i] = octalMagnitude;
+					gc.setLineWidth (barW / 2);
+				} else
+				{
+					if (prevMagnitudes[i] - 2 >= 2 * threshold)
+						prevMagnitudes[i] = prevMagnitudes[i] - 2;
+					magnitudes[i] = prevMagnitudes[i];
+					gc.setStroke (i % 2 == 0 ? lg2 : lg3);
+					gc.setLineWidth (barW);
+				}
+
+				// POSITIONING "FUTURE"
+				futureTop = (prevMagnitudes[i]) * conversion;
+
+				if (canvasCenterY - futureTop < .5)
+				{
+					futureTop = canvasCenterY;
+
+				} else if ( (canvasCenterY - futureTop > -threshold * 1.7))
+				{
+					GraphicsContext gc2 = canvas.getGraphicsContext2D();
+					gc2.setLineWidth (5);
+					gc2.strokeLine (currentLeft, currentBottom / 2,
+							currentLeft, currentBottom / 2 - 15);
+					gc2.strokeLine (currentRight, currentBottom / 2,
+							currentRight, currentBottom / 2 - 15);
+				}
+				// gc = canvas.getGraphicsContext2D();
+
+				bartopArray[i] = futureTop;
+
+				if (louderThanBefore)
+					gc.setLineWidth (barW / 2);
+
+				if ( ! (bartopStack.size() > 1999))
+				{
+					gc.strokeLine (xPos + canvasCenterX, currentBottom, xPos
+							+ canvasCenterX, bartopStack.peek()[i]);
+					gc.strokeLine (canvasCenterX - xPos, currentBottom,
+							canvasCenterX - xPos, bartopStack.peek()[i]);
+					bartopStack.add (bartopArray);
+				} else
+				{
+					bartopStack.remove();
+					bartopStack.remove();
+				}
+			}
+
+		}
+	}
+
 	public void build(Scene scene2, int i)
 	{
-		// TODO Auto-generated method stub
 		this.scene = scene2;
 		build2 (0);
-		child.widthProperty().setValue ((float) this.scene.getWidth());
-		child.heightProperty().setValue ((float) this.scene.getHeight());
-
+		initX.setValue ((float) this.scene.getWidth());
+		initY.setValue ((float) this.scene.getHeight());
 	}
 
 	// @Override
@@ -205,13 +320,13 @@ public class TestVis2 implements TavVisualizationCustomizable
 	@Override
 	public int getNumBands()
 	{
-		return this.child.getNumBands();
+		return this.numBands * 2;
 	}
 
 	@Override
 	public int getThreshold()
 	{
-		return child.getThreshold();
+		return this.threshold;
 	}
 
 	@Override
@@ -231,19 +346,19 @@ public class TestVis2 implements TavVisualizationCustomizable
 	@Override
 	public void setMetaData(TavMetaData metaData)
 	{
-
+		this.songMeta = metaData;
 	}
 
 	@Override
 	public TavVisualizationWidth widthProperty()
 	{
-		return child.widthProperty();
+		return initX;
 	}
 
 	@Override
 	public TavVisualizationHeight heightProperty()
 	{
-		return child.heightProperty();
+		return initY;
 	}
 
 	@Override
@@ -253,27 +368,24 @@ public class TestVis2 implements TavVisualizationCustomizable
 	}
 
 	@Override
-	public void changeColor(int index, Color color)
+	public void changeColor(int index, Color value)
 	{
-		child.changeColor (index, color);
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public Color getCustomColor(int index)
 	{
-		return child.getCustomColor (index);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public void setCustomizeLevels(GridPane levelControls)
 	{
-		this.thresholdDBSlider = (Slider) levelControls
-				.lookup ("#MajorThreshold");
-		this.thresholdTopHatSlider = (Slider) levelControls
-				.lookup ("#MinorThreshold");
-		this.barWidthSlider = (Slider) levelControls.lookup ("#MajorOffset");
-		this.topHatHeightSlider = (Slider) levelControls
-				.lookup ("#MinorOffset");
+		// TODO Auto-generated method stub
+
 	}
 
 }

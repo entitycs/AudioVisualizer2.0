@@ -20,11 +20,7 @@ import application.visualizer.interfacing.TavVisualizationCustomizable;
 import application.visualizer.interfacing.TavVisualizationHeight;
 import application.visualizer.interfacing.TavVisualizationWidth;
 import audiovisualizer.gdx.visualizer.visualization.Visualization;
-import audiovisualizer.gdx.visualizer.visualization.bars.Bars_SrcBot_BassLeft;
-import audiovisualizer.gdx.visualizer.visualization.bars.Bars_SrcBot_BassMid;
 import audiovisualizer.gdx.visualizer.visualization.grid.Grid_SrcMid_BassMid;
-import audiovisualizer.gdx.visualizer.visualization.shapes.BassSquare;
-import audiovisualizer.gdx.visualizer.visualization.shapes.Shapes;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
@@ -96,9 +92,6 @@ public class AudioVisualizer extends Game implements Runnable, TavVisualizationC
 	private TavEndOfMediaEventHandler endOfMediaEventHandler;
 	private TavMetaDataListener metaDataListener;
 	private int currentVisualizationIndex;
-	
-	private Visualization[] visualizations;
-	
 
 	public AudioVisualizer(String arg)
 	{
@@ -123,16 +116,9 @@ public class AudioVisualizer extends Game implements Runnable, TavVisualizationC
 		spectrum = new float[SAMPLE_SIZE];
 
 		fft = new KissFFT (SAMPLE_SIZE);
-		
-		visualizations = new Visualization[5];
-		visualizations[0] = new Grid_SrcMid_BassMid(batch, spectrum);
-		visualizations[1] = new Bars_SrcBot_BassMid(batch, spectrum);
-		visualizations[2] = new Bars_SrcBot_BassLeft(batch, spectrum);
-		visualizations[3] = new BassSquare(batch, spectrum);
-		visualizations[4] = new Shapes(batch, spectrum);
 
 		// create visualization
-		visualization = visualizations[0];
+		visualization = new Grid_SrcMid_BassMid (batch, spectrum);
 
 		// if file chosen by media player manager
 		if (mediaLocation != null)
@@ -152,6 +138,7 @@ public class AudioVisualizer extends Game implements Runnable, TavVisualizationC
 			font = new BitmapFont();
 			openFile();
 		}
+
 	}
 
 	/**
@@ -358,15 +345,15 @@ public class AudioVisualizer extends Game implements Runnable, TavVisualizationC
 	@Override
 	public void render()
 	{
-		int songNameX = WIDTH - 20 - (int) font.getBounds(songName).width;
-		int songNameY = HEIGHT - 20 - (int) font.getBounds(songName).height;
-		int songArtistX = WIDTH - 20 - (int) font.getBounds(songArtist).width;
+		int songNameX = WIDTH - 20 - (int) font.getBounds (songName).width;
+		int songNameY = HEIGHT - 20 - (int) font.getBounds (songName).height;
+		int songArtistX = WIDTH - 20 - (int) font.getBounds (songArtist).width;
 		int songArtistY = songNameY - 20
 				- (int) font.getBounds (songArtist).height;
 
 		// clear screen each frame
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClearColor (0, 0, 0, 1);
+		Gdx.gl.glClear (GL10.GL_COLOR_BUFFER_BIT);
 
 		// update camera
 		camera.update();
@@ -417,14 +404,6 @@ public class AudioVisualizer extends Game implements Runnable, TavVisualizationC
 		// exit program
 		Gdx.app.exit();
 
-	}
-	
-	public void changeVisualization(int index)
-	{
-		if (index < visualizations.length)
-		{
-			visualization = visualizations[index];
-		}
 	}
 
 	/**
