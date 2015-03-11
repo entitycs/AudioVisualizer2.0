@@ -325,6 +325,8 @@ public class AudioVisualizerPlayer implements TavComboMediaPlayer,
 	@Override
 	public void setVisualizationIndex(Number index)
 	{
-		this.visualizationIndex = index.intValue ();		
+		this.visualizationIndex = index.intValue();
+		
+		child.changeVisualization(index.intValue());
 	}
 }

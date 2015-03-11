@@ -384,14 +384,16 @@ public class TavMediaPlayerManager implements TavPlaylistReadyListener,
 	 * Set media player and type based on application manager setting
 	 */
 	private void setMediaPlayerAndType()
-	{
+	{ 
 		if (TavApplicationManager.getInstance().getSettingManager()
-				.getPlayerSetting().equals ("Default"))
+				.getPlayerSetting().equals ("Alternate"))
 
+			this.mediaPlayer = standAloneMediaPlayer();
+		else
 			this.mediaPlayer = comboVisualizerPlayer();
 
-		else
-			this.mediaPlayer = standAloneMediaPlayer();
+	
+	
 	}
 
 	/**

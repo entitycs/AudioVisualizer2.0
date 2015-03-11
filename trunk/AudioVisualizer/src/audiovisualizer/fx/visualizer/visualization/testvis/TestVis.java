@@ -72,7 +72,7 @@ public class TestVis implements TavVisualizationCustomizable
 		child.heightProperty().setValue ((float) root.getHeight());
 		child.widthProperty().setValue ((float) (root.getWidth()));
 		if (this.barWidthSlider != null)
-		{
+		{  
 			this.barWidthSlider.valueProperty().addListener (
 					new ChangeListener<Number>()
 					{
