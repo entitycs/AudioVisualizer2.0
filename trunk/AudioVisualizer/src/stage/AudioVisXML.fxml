@@ -18,7 +18,7 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" text="Open…" />
+            <MenuItem id="Open" mnemonicParsing="false" text="Open…" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem id="Settings" mnemonicParsing="false" text="Settings…" />
             <SeparatorMenuItem mnemonicParsing="false" />

@@ -11,7 +11,7 @@ public class TavMediaPlayerChoiceSetting
 
 	private void useDefault()
 	{
-		this.usePlayerSetting = "Default";
+		this.usePlayerSetting = "Alternative";
 	}
 
 	public void setPlayer(String text)

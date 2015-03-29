@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import stage.mediaPlayer.TavPlayerControlsGroup;
 import stage.mediaPlayer.listener.TavPlayerControlsListener;
+import stage.menuBar.event.TavFileChooserEventHandler;
 import stage.menuBar.event.TavRemoveSelectedMenuItemEventHandler;
 import stage.playlist.TavPlaylist;
 import stage.playlist.listener.TavPlaylistReadyListener;
@@ -28,6 +29,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import application.mediaPlayer.TavMetaData;
 import application.mediaPlayer.listener.TavMetaDataListener;
 import application.setting.event.TavMediaPlayerChoiceSettingEventHandler;
@@ -193,7 +195,10 @@ public class TavApplicationStage extends VBox implements TavMetaDataListener
 	{
 		if (i.getId() != null)
 		{
-			if (i.getId().equals ("Settings"))
+			if (i.getId().equals("Open")){
+				i.setOnAction(new TavFileChooserEventHandler(appScene.getWindow(), playlist));
+			}
+			else if (i.getId().equals ("Settings"))
 			{
 				i.setOnAction (new TavSettingsMenuItemEventHandler (
 						this.visualizerDimensionSettingListener));

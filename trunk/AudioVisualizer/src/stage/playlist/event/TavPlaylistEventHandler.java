@@ -27,9 +27,10 @@ public class TavPlaylistEventHandler implements EventHandler<DragEvent>
 	@Override
 	public void handle(DragEvent event)
 	{
-		if (this.playlistEvent == TavPlaylistEvent.DRAGOVER)
+		if (this.playlistEvent == TavPlaylistEvent.DRAGOVER){
+			
 			handleDragOver (event);
-
+		}
 		else if (this.playlistEvent == TavPlaylistEvent.DRAGDROP)
 			handleDragDrop (event);
 	}
@@ -63,7 +64,7 @@ public class TavPlaylistEventHandler implements EventHandler<DragEvent>
 		{
 			if (file.getPath().isEmpty())
 				continue;
-
+			
 			filePath = file.getAbsolutePath();
 
 			if (filePath.trim().endsWith (".mp3"))
