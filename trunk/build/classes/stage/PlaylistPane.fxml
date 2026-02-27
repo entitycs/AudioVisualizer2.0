@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import java.net.URL?>
+<AnchorPane styleClass="color2" id="playlistPane" minHeight="250.0" minWidth="100.0" prefHeight="489.0" prefWidth="200.0" style="&#10;"
+            xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+    <stylesheets>
+        <URL value="@../application.css"/>
+    </stylesheets>
+</AnchorPane>

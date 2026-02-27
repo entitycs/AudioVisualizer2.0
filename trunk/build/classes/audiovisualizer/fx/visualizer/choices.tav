@@ -1,0 +1,16 @@
+# To use the system to allow changing the
+# visualization of your visualizer, you must
+# list the options here with an index, and 
+# implement the visualizationChoiceListener
+# interface in your visualizer object.
+#
+# Format of this file:
+# e.g.
+# Bars=0
+# Grid=1
+#
+# Then inside of the visualizer object, let
+# the implemented method  set the active visualization
+# according to the index you have provided in this file
+
+TestVis=0

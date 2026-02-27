@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="trunk/AudioVisualizer/src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="trunk/AudioVisualizer/src">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-audio-natives.jar"/>
 	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-audio.jar"/>
 	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-backend-lwjgl-natives.jar"/>
@@ -10,6 +20,40 @@
 	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx-sources.jar"/>
 	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/gdx.jar"/>
 	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/jid3lib-0.5.4.jar"/>
-	<classpathentry kind="lib" path="trunk/AudioVisualizer/libs/jfxrt.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/jfx.incubator.richtext.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/jfx.incubator.input.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/jdk.jsobject.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx-swt.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.web.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.swing.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.media.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.graphics.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.fxml.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.controls.jar"/>
+	<classpathentry kind="lib" path="C:/javafx-sdk-25.0.2/lib/javafx.base.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="test" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
